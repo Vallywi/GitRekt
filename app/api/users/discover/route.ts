@@ -30,7 +30,7 @@ export async function GET() {
         const profilesWithScores = profiles.map((profile: any) => ({
           ...profile,
           compatibility: currentUser ? calculateCompatibility(currentUser as unknown as UserProfile, profile as unknown as UserProfile) : 85
-        })).sort((a, b) => b.compatibility - a.compatibility);
+        })).sort((a: any, b: any) => b.compatibility - a.compatibility);
         
         return NextResponse.json(profilesWithScores);
       }
