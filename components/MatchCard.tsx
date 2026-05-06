@@ -12,6 +12,7 @@ interface UserProfile {
   bio: string;
   skills: string[];
   image: string;
+  compatibility?: number;
 }
 
 interface MatchCardProps {
@@ -49,6 +50,12 @@ export default function MatchCard({ profile, onSwipe }: MatchCardProps) {
             className={styles.image} 
           />
           <div className={styles.imageOverlay}>
+            {profile.compatibility && (
+              <div className={styles.matchScore}>
+                <span>{profile.compatibility}%</span>
+                <p>Match</p>
+              </div>
+            )}
             <div className={styles.socials}>
               <Globe size={20} />
               <User size={20} />

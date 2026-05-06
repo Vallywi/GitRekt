@@ -51,10 +51,22 @@ export default function OnboardingPage() {
     }));
   };
 
-  const completeOnboarding = () => {
-    // Save to localStorage
-    localStorage.setItem('hackmatch_user', JSON.stringify(formData));
-    router.push('/discover');
+  const completeOnboarding = async () => {
+    try {
+      const response = await fetch('/api/users/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        router.push('/discover');
+      } else {
+        console.error('Failed to save profile');
+      }
+    } catch (error) {
+      console.error('Onboarding Error:', error);
+    }
   };
 
   return (
@@ -148,7 +160,7 @@ export default function OnboardingPage() {
               <div className={styles.inputGroup}>
                 <label>Tell us about yourself</label>
                 <textarea 
-                  placeholder="I'm a passionate engineer looking to build the next big thing in..."
+                  placeholder="I&apos;m a passionate engineer looking to build the next big thing in..."
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                 />
