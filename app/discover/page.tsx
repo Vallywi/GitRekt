@@ -21,8 +21,29 @@ export default function DiscoverPage() {
       });
   }, []);
 
-  const handleSwipe = (direction: 'left' | 'right') => {
-    console.log(`Swiped ${direction} on ${profiles[activeProfileIndex].name}`);
+  const handleSwipe = async (direction: 'left' | 'right') => {
+    const targetUser = profiles[activeProfileIndex];
+    console.log(`Swiped ${direction} on ${targetUser.name}`);
+
+    try {
+      const response = await fetch('/api/matches/swipe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUserId: targetUser.id,
+          direction
+        }),
+      });
+
+      const result = await response.json();
+      if (result.status === 'match') {
+        // Trigger match success animation/navigation
+        window.location.href = `/match-success?id=${targetUser.id}`;
+      }
+    } catch (error) {
+      console.error('Failed to record swipe:', error);
+    }
+
     setActiveProfileIndex(prev => prev + 1);
   };
 

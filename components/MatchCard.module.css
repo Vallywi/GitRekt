@@ -45,6 +45,34 @@
   color: var(--outline);
 }
 
+.matchScore {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(139, 92, 246, 0.9);
+  backdrop-filter: blur(8px);
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.matchScore span {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.matchScore p {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-top: 2px;
+  opacity: 0.9;
+}
+
 .socials svg:hover {
   color: var(--primary);
   cursor: pointer;

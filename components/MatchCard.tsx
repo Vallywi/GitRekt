@@ -1,7 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { motion, PanInfo } from 'framer-motion';
-import { User, ExternalLink, Code2, Cpu, Palette, Globe } from 'lucide-react';
+import { User, ExternalLink, Code2, Cpu, Globe } from 'lucide-react';
 import styles from './MatchCard.module.css';
 
 interface UserProfile {
@@ -11,6 +12,7 @@ interface UserProfile {
   bio: string;
   skills: string[];
   image: string;
+  compatibility?: number;
 }
 
 interface MatchCardProps {
@@ -19,7 +21,7 @@ interface MatchCardProps {
 }
 
 export default function MatchCard({ profile, onSwipe }: MatchCardProps) {
-  const handleDragEnd = (event: any, info: PanInfo) => {
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
     if (info.offset.x > 100) {
       onSwipe('right');
     } else if (info.offset.x < -100) {
@@ -40,8 +42,20 @@ export default function MatchCard({ profile, onSwipe }: MatchCardProps) {
     >
       <div className={styles.card}>
         <div className={styles.imageSection}>
-          <img src={profile.image} alt={profile.name} className={styles.image} />
+          <Image 
+            src={profile.image} 
+            alt={profile.name} 
+            fill 
+            style={{ objectFit: 'cover' }}
+            className={styles.image} 
+          />
           <div className={styles.imageOverlay}>
+            {profile.compatibility && (
+              <div className={styles.matchScore}>
+                <span>{profile.compatibility}%</span>
+                <p>Match</p>
+              </div>
+            )}
             <div className={styles.socials}>
               <Globe size={20} />
               <User size={20} />

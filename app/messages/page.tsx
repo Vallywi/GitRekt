@@ -1,19 +1,85 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import Sidebar from '@/components/Sidebar';
 import { Send, Phone, Video, Info, Search, MoreVertical } from 'lucide-react';
+import { pusherClient } from '@/lib/pusher';
+import { useSession } from 'next-auth/react';
 import styles from './Messages.module.css';
 
-const CHATS = [
-  { id: '1', name: 'Sarah Chen', status: 'Online', lastMsg: "Hey! Let's talk about the AI project.", time: '12:45 PM', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=60' },
-  { id: '2', name: 'Alex Rivera', status: 'Offline', lastMsg: 'I can handle the Rust backend.', time: 'Yesterday', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=60' },
-  { id: '3', name: 'Marcus Thorne', status: 'Online', lastMsg: 'Have you seen the latest EthGlobal rules?', time: '2d ago', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=60' },
-];
-
 export default function MessagesPage() {
-  const [activeChat, setActiveChat] = useState(CHATS[0]);
-  const [message, setMessage] = useState('');
+  const { data: session } = useSession();
+  const [chats, setChats] = useState<any[]>([]);
+  const [activeChat, setActiveChat] = useState<any>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [messageText, setMessageText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Fetch Chat List
+  useEffect(() => {
+    fetch('/api/messages/chats')
+      .then(res => res.json())
+      .then(data => {
+        setChats(data);
+        if (data.length > 0) setActiveChat(data[0]);
+        setLoading(false);
+      });
+  }, []);
+
+  // Fetch Messages and Subscribe to Pusher
+  useEffect(() => {
+    if (!activeChat || !session?.user) return;
+
+    const currentUserId = session.user.id;
+    const channelName = [currentUserId, activeChat.id].sort().join('-');
+
+    // Fetch message history (To be implemented in API)
+    // fetch(`/api/messages/history?otherUserId=${activeChat.id}`)
+    //   .then(res => res.json())
+    //   .then(data => setMessages(data));
+
+    if (!pusherClient) return;
+
+    const channel = pusherClient.subscribe(channelName);
+    
+    channel.bind('new-message', (newMessage: any) => {
+      setMessages(prev => [...prev, newMessage]);
+    });
+
+    return () => {
+      pusherClient?.unsubscribe(channelName);
+    };
+  }, [activeChat, session]);
+
+  // Scroll to bottom on new message
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!messageText.trim() || !activeChat) return;
+
+    const text = messageText;
+    setMessageText('');
+
+    try {
+      await fetch('/api/messages/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          receiverId: activeChat.id,
+          content: text
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
+  };
+
+  if (loading) return <div className={styles.loading}>Initializing chat...</div>;
 
   return (
     <div className={styles.container}>
@@ -30,14 +96,19 @@ export default function MessagesPage() {
           </div>
           
           <div className={styles.chats}>
-            {CHATS.map((chat) => (
+            {chats.map((chat) => (
               <button 
                 key={chat.id}
-                className={`${styles.chatItem} ${activeChat.id === chat.id ? styles.activeChat : ''}`}
+                className={`${styles.chatItem} ${activeChat?.id === chat.id ? styles.activeChat : ''}`}
                 onClick={() => setActiveChat(chat)}
               >
                 <div className={styles.chatAvatar}>
-                  <img src={chat.avatar} alt={chat.name} />
+                  <Image 
+                    src={chat.avatar || `https://ui-avatars.com/api/?name=${chat.name}`} 
+                    alt={chat.name} 
+                    width={40}
+                    height={40}
+                  />
                   {chat.status === 'Online' && <div className={styles.onlineDot} />}
                 </div>
                 <div className={styles.chatInfo}>
@@ -52,53 +123,67 @@ export default function MessagesPage() {
           </div>
         </section>
 
-        <section className={styles.chatWindow}>
-          <header className={styles.windowHeader}>
-            <div className={styles.activeUser}>
-              <div className={styles.chatAvatar}>
-                <img src={activeChat.avatar} alt={activeChat.name} />
+        {activeChat ? (
+          <section className={styles.chatWindow}>
+            <header className={styles.windowHeader}>
+              <div className={styles.activeUser}>
+                <div className={styles.chatAvatar}>
+                  <Image 
+                    src={activeChat.avatar || `https://ui-avatars.com/api/?name=${activeChat.name}`} 
+                    alt={activeChat.name} 
+                    width={40}
+                    height={40}
+                  />
+                </div>
+                <div>
+                  <h3>{activeChat.name}</h3>
+                  <span className={styles.status}>{activeChat.status}</span>
+                </div>
               </div>
-              <div>
-                <h3>{activeChat.name}</h3>
-                <span className={styles.status}>{activeChat.status}</span>
+              <div className={styles.windowActions}>
+                <button className={styles.iconBtn}><Phone size={20} /></button>
+                <button className={styles.iconBtn}><Video size={20} /></button>
+                <button className={styles.iconBtn}><Info size={20} /></button>
               </div>
-            </div>
-            <div className={styles.windowActions}>
-              <button className={styles.iconBtn}><Phone size={20} /></button>
-              <button className={styles.iconBtn}><Video size={20} /></button>
-              <button className={styles.iconBtn}><Info size={20} /></button>
-            </div>
-          </header>
+            </header>
 
-          <div className={styles.messages}>
-            <div className={styles.msgGroup}>
-              <div className={styles.msgReceived}>
-                Hi! I saw your profile on HackMatch. I'm really interested in your AI project idea.
-              </div>
-              <span className={styles.msgTime}>12:45 PM</span>
+            <div className={styles.messages}>
+              {messages.map((msg, index) => (
+                <div 
+                  key={msg.id || index} 
+                  className={`${styles.msgGroup} ${msg.senderId === session?.user.id ? styles.msgSentGroup : ''}`}
+                >
+                  <div className={msg.senderId === session?.user.id ? styles.msgSent : styles.msgReceived}>
+                    {msg.content}
+                  </div>
+                  <span className={styles.msgTime}>
+                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              ))}
+              <div ref={scrollRef} />
             </div>
-            <div className={`${styles.msgGroup} ${styles.msgSentGroup}`}>
-              <div className={styles.msgSent}>
-                Hey Sarah! Glad you reached out. Your design work is exactly what I'm looking for.
-              </div>
-              <span className={styles.msgTime}>12:48 PM</span>
-            </div>
+
+            <footer className={styles.inputFooter}>
+              <form onSubmit={sendMessage} className={styles.inputWrapper}>
+                <input 
+                  type="text" 
+                  placeholder="Type your message..." 
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                />
+                <button type="submit" className={styles.sendBtn}>
+                  <Send size={20} />
+                </button>
+              </form>
+            </footer>
+          </section>
+        ) : (
+          <div className={styles.noChat}>
+            <h2>Select a match to start chatting</h2>
+            <p>You haven't matched with anyone yet. Go to Discover to find teammates!</p>
           </div>
-
-          <footer className={styles.inputFooter}>
-            <div className={styles.inputWrapper}>
-              <input 
-                type="text" 
-                placeholder="Type your message..." 
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-              <button className={styles.sendBtn}>
-                <Send size={20} />
-              </button>
-            </div>
-          </footer>
-        </section>
+        )}
       </main>
     </div>
   );

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Sidebar from '@/components/Sidebar';
 import { 
   Users, 
@@ -78,7 +79,12 @@ export default function DashboardPage() {
               <div className={styles.teamMembers}>
                 {[1, 2, 3].map((i) => (
                   <div key={i} className={styles.memberAvatar}>
-                    <img src={`https://ui-avatars.com/api/?name=Member${i}&background=random`} alt="Member" />
+                    <Image 
+                      src={`https://ui-avatars.com/api/?name=Member${i}&background=random`} 
+                      alt="Member" 
+                      width={32}
+                      height={32}
+                    />
                   </div>
                 ))}
                 <div className={styles.addMember}>

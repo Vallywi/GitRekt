@@ -2,35 +2,50 @@
 
 :root {
   /* Colors */
-  --background: #15121b;
-  --foreground: #e7e0ed;
+  --background: #0a090d;
+  --foreground: #fcfaff;
   
-  --primary: #d0bcff;
-  --on-primary: #3c0091;
-  --primary-container: #a078ff;
-  --on-primary-container: #340080;
+  --primary: #8b5cf6;
+  --primary-light: #a78bfa;
+  --primary-dark: #6d28d9;
   
-  --secondary: #dbb8ff;
-  --secondary-container: #573878;
+  --accent: #38bdf8;
+  --success: #10b981;
+  --warning: #f59e0b;
   
   --surface: #15121b;
-  --surface-bright: #3b3742;
-  --surface-container: #211e27;
-  --surface-container-high: #2c2832;
-  --surface-container-highest: #37333d;
+  --surface-muted: #1a1722;
+  --surface-bright: #2d2a36;
   
-  --outline: #958ea0;
-  --outline-variant: #494454;
+  --outline: #494454;
+  --outline-variant: #2d2a36;
   
   /* Fonts */
   --font-heading: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
   
-  /* Effects */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-blur: blur(20px);
-  --primary-glow: 0 0 30px rgba(139, 92, 246, 0.2);
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(12px);
+  
+  /* Shadows & Glows */
+  --primary-glow: 0 0 40px rgba(139, 92, 246, 0.3);
+  --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes gradient-bg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 50%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: gradient-bg 5s ease infinite;
 }
 
 * {
