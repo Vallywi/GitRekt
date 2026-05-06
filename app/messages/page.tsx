@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Sidebar from '@/components/Sidebar';
-import { Send, Phone, Video, Info, Search, MoreVertical } from 'lucide-react';
+import { Send, Phone, Video, Info, Search } from 'lucide-react';
 import styles from './Messages.module.css';
 
 const CHATS = [
@@ -37,7 +38,12 @@ export default function MessagesPage() {
                 onClick={() => setActiveChat(chat)}
               >
                 <div className={styles.chatAvatar}>
-                  <img src={chat.avatar} alt={chat.name} />
+                  <Image 
+                    src={chat.avatar} 
+                    alt={chat.name} 
+                    width={40}
+                    height={40}
+                  />
                   {chat.status === 'Online' && <div className={styles.onlineDot} />}
                 </div>
                 <div className={styles.chatInfo}>
@@ -56,7 +62,12 @@ export default function MessagesPage() {
           <header className={styles.windowHeader}>
             <div className={styles.activeUser}>
               <div className={styles.chatAvatar}>
-                <img src={activeChat.avatar} alt={activeChat.name} />
+                <Image 
+                  src={activeChat.avatar} 
+                  alt={activeChat.name} 
+                  width={40}
+                  height={40}
+                />
               </div>
               <div>
                 <h3>{activeChat.name}</h3>
@@ -73,13 +84,13 @@ export default function MessagesPage() {
           <div className={styles.messages}>
             <div className={styles.msgGroup}>
               <div className={styles.msgReceived}>
-                Hi! I saw your profile on HackMatch. I'm really interested in your AI project idea.
+                Hi! I saw your profile on HackMatch. I&apos;m really interested in your AI project idea.
               </div>
               <span className={styles.msgTime}>12:45 PM</span>
             </div>
             <div className={`${styles.msgGroup} ${styles.msgSentGroup}`}>
               <div className={styles.msgSent}>
-                Hey Sarah! Glad you reached out. Your design work is exactly what I'm looking for.
+                Hey Sarah! Glad you reached out. Your design work is exactly what I&apos;m looking for.
               </div>
               <span className={styles.msgTime}>12:48 PM</span>
             </div>

@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Code2, 
   Palette, 
-  Cpu, 
   Database, 
   Layers, 
   ArrowRight, 

@@ -1,14 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Sidebar from '@/components/Sidebar';
 import MatchCard from '@/components/MatchCard';
 import { AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, Bell } from 'lucide-react';
 import styles from './Discover.module.css';
 
+interface UserProfile {
+  id: string;
+  name: string;
+  role: string;
+  bio: string;
+  skills: string[];
+  image: string;
+}
+
 export default function DiscoverPage() {
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [activeProfileIndex, setActiveProfileIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -22,7 +32,8 @@ export default function DiscoverPage() {
   }, []);
 
   const handleSwipe = (direction: 'left' | 'right') => {
-    console.log(`Swiped ${direction} on ${profiles[activeProfileIndex].name}`);
+    const currentProfile = profiles[activeProfileIndex];
+    console.log(`Swiped ${direction} on ${currentProfile.name}`);
     setActiveProfileIndex(prev => prev + 1);
   };
 
@@ -43,11 +54,15 @@ export default function DiscoverPage() {
             <button className={styles.iconBtn}><SlidersHorizontal size={20} /></button>
             <button className={styles.iconBtn}><Bell size={20} /></button>
             <div className={styles.avatar}>
-              <img src="https://ui-avatars.com/api/?name=User&background=8b5cf6&color=fff" alt="Profile" />
+              <Image 
+                src="https://ui-avatars.com/api/?name=User&background=8b5cf6&color=fff" 
+                alt="Profile" 
+                width={40}
+                height={40}
+              />
             </div>
           </div>
         </header>
-
         <section className={styles.content}>
           <div className={styles.cardStack}>
             <AnimatePresence mode="popLayout">

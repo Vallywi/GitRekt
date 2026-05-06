@@ -1,6 +1,7 @@
 'use client';
 
 import Sidebar from '@/components/Sidebar';
+import Image from 'next/image';
 import { Calendar, MapPin, Trophy, ArrowRight } from 'lucide-react';
 import styles from './Events.module.css';
 
@@ -51,7 +52,12 @@ export default function EventsPage() {
           {MOCK_EVENTS.map((event) => (
             <div key={event.id} className="glass-card" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <div className={styles.eventImage}>
-                <img src={event.image} alt={event.title} />
+                <Image 
+                  src={event.image} 
+                  alt={event.title} 
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
                 <div className={styles.prizeBadge}>
                   <Trophy size={14} /> {event.prize}
                 </div>
