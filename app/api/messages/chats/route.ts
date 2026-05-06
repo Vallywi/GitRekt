@@ -26,7 +26,7 @@ export async function GET() {
       });
 
       if (matches.length > 0) {
-        const chats = matches.map(match => {
+        const chats = matches.map((match: any) => {
           const otherUser = match.user1Id === userId ? match.user2 : match.user1;
           return {
             id: otherUser.id,
