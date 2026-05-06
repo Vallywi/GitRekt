@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     }
 
     const { targetUserId, direction } = await req.json();
-    const currentUserId = (session.user as any).id;
+    const currentUserId = session.user.id;
 
     if (direction === 'left') {
       // Record rejection (optional, depending on if you want to store "left" swipes)

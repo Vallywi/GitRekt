@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const { prisma } = await import('@/lib/prisma');
     const session = await getServerSession(authOptions);
-    const userId = (session?.user as any)?.id;
+    const userId = session?.user?.id;
 
     try {
       if (!prisma || !userId) throw new Error('Database or session unavailable');

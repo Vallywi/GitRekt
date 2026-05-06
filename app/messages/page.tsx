@@ -8,11 +8,28 @@ import { pusherClient } from '@/lib/pusher';
 import { useSession } from 'next-auth/react';
 import styles from './Messages.module.css';
 
+interface Chat {
+  id: string;
+  name: string;
+  avatar: string;
+  status: string;
+  lastMsg: string;
+  time: string;
+}
+
+interface Message {
+  id?: string;
+  content: string;
+  senderId: string;
+  receiverId: string;
+  createdAt: string;
+}
+
 export default function MessagesPage() {
   const { data: session } = useSession();
-  const [chats, setChats] = useState<any[]>([]);
-  const [activeChat, setActiveChat] = useState<any>(null);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [activeChat, setActiveChat] = useState<Chat | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState('');
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -44,7 +61,7 @@ export default function MessagesPage() {
 
     const channel = pusherClient.subscribe(channelName);
     
-    channel.bind('new-message', (newMessage: any) => {
+    channel.bind('new-message', (newMessage: Message) => {
       setMessages(prev => [...prev, newMessage]);
     });
 

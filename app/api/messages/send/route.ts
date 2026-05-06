@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
     const { prisma } = await import('@/lib/prisma');
     const { receiverId, content } = await req.json();
-    const senderId = (session.user as any).id;
+    const senderId = session.user.id;
 
     let message;
     if (prisma) {
