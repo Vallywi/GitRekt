@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { MessageSquare, Users, Sparkles, X } from 'lucide-react';
@@ -7,6 +8,18 @@ import styles from './MatchSuccess.module.css';
 
 export default function MatchSuccessPage() {
   const router = useRouter();
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('hackmatch_username');
+    if (!storedUsername) {
+      router.push('/signin');
+    } else {
+      setUsername(storedUsername);
+    }
+  }, [router]);
+
+  if (!username) return null;
 
   return (
     <main className={styles.container}>
@@ -36,7 +49,7 @@ export default function MatchSuccessPage() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <img src="https://ui-avatars.com/api/?name=User&background=8b5cf6&color=fff" alt="User" />
+            <img src={`https://ui-avatars.com/api/?name=${username}&background=8b5cf6&color=fff`} alt="User" />
           </motion.div>
           <div className={styles.connectionLine} />
           <motion.div 

@@ -1,104 +1,199 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Sidebar from '@/components/Sidebar';
-import { Send, Phone, Video, Info, Search, MoreVertical } from 'lucide-react';
+import { Send, Bell, User, Search, MoreVertical, Phone, Video } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Messages.module.css';
 
-const CHATS = [
-  { id: '1', name: 'Sarah Chen', status: 'Online', lastMsg: "Hey! Let's talk about the AI project.", time: '12:45 PM', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=60' },
-  { id: '2', name: 'Alex Rivera', status: 'Offline', lastMsg: 'I can handle the Rust backend.', time: 'Yesterday', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=60' },
-  { id: '3', name: 'Marcus Thorne', status: 'Online', lastMsg: 'Have you seen the latest EthGlobal rules?', time: '2d ago', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=60' },
+const threads = [
+  {
+    id: 'system',
+    name: 'System Notifications',
+    isSystem: true,
+    unread: 2,
+    messages: [
+      { id: 1, text: 'Welcome to HackMatch!', sender: 'system', time: 'Yesterday' },
+      { id: 2, text: 'You have a new match with Miguel Domingo', sender: 'system', time: '10:00 AM' }
+    ]
+  },
+  {
+    id: 'miguel',
+    name: 'Miguel Domingo',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&fit=crop',
+    interactive: true,
+    messages: [
+      { id: 1, text: 'Hey! I saw your profile, want to team up for the next hackathon?', sender: 'miguel', time: '10:05 AM' }
+    ]
+  },
+  {
+    id: 'andrei',
+    name: 'Andrei Santos',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&fit=crop',
+    messages: [
+      { id: 1, text: 'Hi! Are you interested in a frontend project?', sender: 'andrei', time: '2 days ago' },
+      { id: 2, text: 'Yeah, sounds great. What stack?', sender: 'me', time: '2 days ago' },
+      { id: 3, text: 'Next.js and Tailwind. We need something fast.', sender: 'andrei', time: '1 day ago' }
+    ]
+  },
+  {
+    id: 'mia',
+    name: 'Mia Reyes',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&fit=crop',
+    messages: [
+      { id: 1, text: 'Your data models look really clean.', sender: 'mia', time: '3 days ago' },
+      { id: 2, text: 'Thanks! Let me know if you want to collaborate.', sender: 'me', time: '2 days ago' }
+    ]
+  },
+  {
+    id: 'trisha',
+    name: 'Trisha Lim',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&fit=crop',
+    messages: [
+      { id: 1, text: 'Sent you the Figma files for the design system.', sender: 'trisha', time: '5 days ago' }
+    ]
+  }
 ];
 
 export default function MessagesPage() {
-  const [activeChat, setActiveChat] = useState(CHATS[0]);
-  const [message, setMessage] = useState('');
+  const [activeThreadId, setActiveThreadId] = useState('miguel');
+  const [messages, setMessages] = useState<any[]>([]);
+  const [inputText, setInputText] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const activeThread = threads.find(t => t.id === activeThreadId);
+
+  useEffect(() => {
+    if (activeThread) {
+      setMessages(activeThread.messages);
+    }
+  }, [activeThreadId]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputText.trim() || !activeThread?.interactive) return;
+
+    const newMessage = {
+      id: Date.now(),
+      text: inputText,
+      sender: 'me',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages([...messages, newMessage]);
+    setInputText('');
+  };
 
   return (
     <div className={styles.container}>
       <Sidebar />
       
       <main className={styles.main}>
-        <section className={styles.chatList}>
-          <div className={styles.searchHeader}>
+        <div className={styles.threadsSidebar}>
+          <div className={styles.threadsHeader}>
             <h2>Messages</h2>
-            <div className={styles.searchBar}>
-              <Search size={16} />
-              <input type="text" placeholder="Search chats..." />
+            <div className={styles.searchBox}>
+              <Search size={18} />
+              <input type="text" placeholder="Search conversations..." />
             </div>
           </div>
           
-          <div className={styles.chats}>
-            {CHATS.map((chat) => (
+          <div className={styles.threadsList}>
+            {threads.map(thread => (
               <button 
-                key={chat.id}
-                className={`${styles.chatItem} ${activeChat.id === chat.id ? styles.activeChat : ''}`}
-                onClick={() => setActiveChat(chat)}
+                key={thread.id}
+                className={`${styles.threadItem} ${activeThreadId === thread.id ? styles.active : ''}`}
+                onClick={() => setActiveThreadId(thread.id)}
               >
-                <div className={styles.chatAvatar}>
-                  <img src={chat.avatar} alt={chat.name} />
-                  {chat.status === 'Online' && <div className={styles.onlineDot} />}
+                <div className={styles.threadAvatar}>
+                  {thread.isSystem ? (
+                    <div className={styles.systemIcon}><Bell size={20} /></div>
+                  ) : (
+                    <img src={thread.avatar} alt={thread.name} />
+                  )}
+                  {thread.unread && <span className={styles.unreadBadge}>{thread.unread}</span>}
                 </div>
-                <div className={styles.chatInfo}>
-                  <div className={styles.chatHeader}>
-                    <span className={styles.chatName}>{chat.name}</span>
-                    <span className={styles.chatTime}>{chat.time}</span>
+                <div className={styles.threadInfo}>
+                  <div className={styles.threadNameRow}>
+                    <span className={styles.threadName}>{thread.name}</span>
+                    <span className={styles.threadTime}>
+                      {thread.messages[thread.messages.length - 1].time}
+                    </span>
                   </div>
-                  <p className={styles.lastMsg}>{chat.lastMsg}</p>
+                  <p className={styles.lastMessage}>
+                    {thread.messages[thread.messages.length - 1].text}
+                  </p>
                 </div>
               </button>
             ))}
           </div>
-        </section>
+        </div>
 
-        <section className={styles.chatWindow}>
-          <header className={styles.windowHeader}>
-            <div className={styles.activeUser}>
-              <div className={styles.chatAvatar}>
-                <img src={activeChat.avatar} alt={activeChat.name} />
-              </div>
-              <div>
-                <h3>{activeChat.name}</h3>
-                <span className={styles.status}>{activeChat.status}</span>
-              </div>
-            </div>
-            <div className={styles.windowActions}>
-              <button className={styles.iconBtn}><Phone size={20} /></button>
-              <button className={styles.iconBtn}><Video size={20} /></button>
-              <button className={styles.iconBtn}><Info size={20} /></button>
-            </div>
-          </header>
+        <div className={`${styles.chatPanel} ${!activeThreadId ? styles.hiddenMobile : ''}`}>
+          {activeThread ? (
+            <>
+              <header className={styles.chatHeader}>
+                <div className={styles.chatUserInfo}>
+                  <div className={styles.chatAvatar}>
+                    {activeThread.isSystem ? (
+                      <div className={styles.systemIcon}><Bell size={20} /></div>
+                    ) : (
+                      <img src={activeThread.avatar} alt={activeThread.name} />
+                    )}
+                  </div>
+                  <div>
+                    <h3>{activeThread.name}</h3>
+                    <span className={styles.status}>Online</span>
+                  </div>
+                </div>
+                <div className={styles.chatActions}>
+                  <button><Phone size={20} /></button>
+                  <button><Video size={20} /></button>
+                  <button><MoreVertical size={20} /></button>
+                </div>
+              </header>
 
-          <div className={styles.messages}>
-            <div className={styles.msgGroup}>
-              <div className={styles.msgReceived}>
-                Hi! I saw your profile on HackMatch. I'm really interested in your AI project idea.
+              <div className={styles.messagesList}>
+                {messages.map(msg => (
+                  <div 
+                    key={msg.id} 
+                    className={`${styles.messageWrapper} ${msg.sender === 'me' ? styles.mine : styles.theirs} ${msg.sender === 'system' ? styles.system : ''}`}
+                  >
+                    <div className={styles.messageBubble}>
+                      {msg.text}
+                      <span className={styles.messageTime}>{msg.time}</span>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
               </div>
-              <span className={styles.msgTime}>12:45 PM</span>
-            </div>
-            <div className={`${styles.msgGroup} ${styles.msgSentGroup}`}>
-              <div className={styles.msgSent}>
-                Hey Sarah! Glad you reached out. Your design work is exactly what I'm looking for.
-              </div>
-              <span className={styles.msgTime}>12:48 PM</span>
-            </div>
-          </div>
 
-          <footer className={styles.inputFooter}>
-            <div className={styles.inputWrapper}>
-              <input 
-                type="text" 
-                placeholder="Type your message..." 
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-              <button className={styles.sendBtn}>
-                <Send size={20} />
-              </button>
+              {activeThread.interactive && (
+                <form className={styles.inputArea} onSubmit={handleSend}>
+                  <input 
+                    type="text" 
+                    placeholder="Type a message..." 
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                  />
+                  <button type="submit" disabled={!inputText.trim()}>
+                    <Send size={20} />
+                  </button>
+                </form>
+              )}
+            </>
+          ) : (
+            <div className={styles.emptyChat}>
+              <div className={styles.emptyIcon}>💬</div>
+              <h2>Select a conversation</h2>
+              <p>Choose a thread from the sidebar to start collaborating.</p>
             </div>
-          </footer>
-        </section>
+          )}
+        </div>
       </main>
     </div>
   );

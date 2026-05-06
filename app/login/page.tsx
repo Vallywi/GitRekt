@@ -28,7 +28,7 @@ export default function LoginPage() {
         transition={{ duration: 0.5 }}
       >
         <div className={styles.header}>
-          <Zap className={styles.logo} fill="var(--primary)" />
+          <img src="/logo/logo.png" alt="HackMatch" style={{ width: '100px', height: 'auto', marginBottom: '1.5rem' }} />
           <h1>{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
           <p>{isLogin ? 'Enter your credentials to access HackMatch' : 'Join the elite network of hackathon engineers'}</p>
         </div>

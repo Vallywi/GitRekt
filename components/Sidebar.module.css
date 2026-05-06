@@ -1,7 +1,8 @@
 .sidebar {
   width: 280px;
   height: 100vh;
-  background: var(--surface-container);
+  background: rgba(21, 18, 27, 0.8);
+  backdrop-filter: blur(20px);
   border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
@@ -13,27 +14,17 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 3rem;
-  padding-left: 0.5rem;
-}
-
-.logoIcon {
-  color: var(--primary);
-}
-
-.logoText {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  padding-left: 0;
+  text-decoration: none;
 }
 
 .nav {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  flex: 1;
+  margin-top: 2rem;
 }
 
 .navLink {
@@ -41,22 +32,22 @@
   align-items: center;
   gap: 1rem;
   padding: 0.875rem 1rem;
-  border-radius: 0.75rem;
   color: var(--outline);
   text-decoration: none;
+  border-radius: 0.75rem;
   font-weight: 500;
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .navLink:hover {
-  background: var(--glass-bg);
+  background: var(--surface-container);
   color: var(--foreground);
 }
 
-.active {
-  background: var(--glass-bg);
-  color: var(--primary);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+.navLink.active {
+  background: var(--primary);
+  color: var(--on-primary);
 }
 
 .footer {
@@ -64,8 +55,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding-top: 2rem;
   border-top: 1px solid var(--glass-border);
+  padding-top: 1.5rem;
 }
 
 .logoutBtn {
@@ -73,17 +64,154 @@
   align-items: center;
   gap: 1rem;
   padding: 0.875rem 1rem;
-  border-radius: 0.75rem;
-  color: var(--outline);
+  width: 100%;
   background: transparent;
   border: none;
-  cursor: pointer;
+  color: #ffb4ab;
+  border-radius: 0.75rem;
   font-weight: 500;
-  width: 100%;
-  transition: all 0.2s ease;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 44px;
 }
 
 .logoutBtn:hover {
   background: rgba(255, 180, 171, 0.1);
-  color: #ffb4ab;
+}
+
+/* Mobile Nav */
+.mobileNav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: rgba(21, 18, 27, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--glass-border);
+  z-index: 1000;
+  padding: 0 1rem;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.mobileNavLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--outline);
+  text-decoration: none;
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.mobileActive {
+  color: var(--primary);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1.5rem;
+}
+
+.modal {
+  background: var(--surface-container-high);
+  border: 1px solid var(--glass-border);
+  width: 100%;
+  max-width: 400px;
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.modalHeader {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoutIcon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 75, 75, 0.1);
+  color: #ff4b4b;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--outline);
+  cursor: pointer;
+}
+
+.modalBody {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.modalBody h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.modalBody p {
+  color: var(--outline);
+  font-size: 0.9375rem;
+}
+
+.modalFooter {
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.modalFooter button {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 44px;
+}
+
+.cancelBtn {
+  background: var(--surface-container-highest);
+  border: 1px solid var(--glass-border);
+  color: var(--foreground);
+}
+
+.confirmBtn {
+  background: #ff4b4b;
+  border: none;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  
+  .mobileNav {
+    display: flex;
+  }
 }

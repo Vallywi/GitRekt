@@ -126,3 +126,18 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--outline);
 }
+
+/* Mobile Utilities */
+@media (max-width: 768px) {
+  .app-container {
+    padding-bottom: 72px; /* Height of mobile nav */
+  }
+  
+  .btn-primary, .btn-secondary, button, a, input {
+    min-height: 44px; /* Accessible touch targets */
+  }
+}
+
+.no-scroll {
+  overflow: hidden;
+}

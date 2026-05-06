@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import styles from './page.module.css';
-import { ArrowRight, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
@@ -15,28 +14,28 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
       >
-        <span className={styles.badge}>
-          <Sparkles size={14} style={{ marginRight: '8px' }} />
-          Beta Access Now Open
-        </span>
+        <img 
+          src="/logo/logo.png" 
+          alt="HackMatch Logo" 
+          className={styles.heroLogo}
+        />
         
-        <h1 className={styles.title}>
-          Elite Teams for <br /> 
-          <span style={{ color: 'var(--primary)' }}>High-Stakes</span> Code.
+        <h1 className={styles.title} style={{ color: 'white', fontWeight: 'bold', fontSize: '3.5rem', marginBottom: '1rem' }}>
+          Find Your Hackathon Team
         </h1>
         
-        <p className={styles.subtitle}>
-          Stop searching, start matching. The first Tinder-style platform <br />
-          exclusively for finding top-tier hackathon collaborators.
+        <p className={styles.subtitle} style={{ color: 'var(--outline)', maxWidth: '600px', marginBottom: '2.5rem' }}>
+          Match with developers, designers, and builders who complement your skills.
         </p>
         
-        <div className={styles.actions}>
-          <Link href="/discover" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            Get Started <ArrowRight size={18} />
+        <div className={styles.actions} style={{ display: 'flex', gap: '1.5rem' }}>
+          <Link href="/signin" className="btn-primary">
+            Get Started
           </Link>
           <Link href="/events" className="btn-secondary">
-            View Hackathons
+            Browse Events
           </Link>
         </div>
       </motion.div>

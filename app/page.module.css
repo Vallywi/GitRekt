@@ -67,10 +67,30 @@
   .title {
     font-size: 3rem;
   }
+
   .actions {
     flex-direction: column;
     width: 100%;
     max-width: 300px;
     margin: 0 auto;
+  }
+}
+
+.heroLogo {
+  width: 350px;
+  height: auto;
+  margin-bottom: 2rem;
+  animation: logoGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 12px #7c3aed);
+  }
+
+  50% {
+    filter: drop-shadow(0 0 28px #a855f7);
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -32,6 +32,13 @@ const SKILLS = [
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('hackmatch_username');
+    if (!storedUsername) {
+      router.push('/signin');
+    }
+  }, [router]);
   const [formData, setFormData] = useState({
     role: '',
     skills: [] as string[],

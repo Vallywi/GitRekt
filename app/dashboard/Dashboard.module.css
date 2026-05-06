@@ -10,12 +10,151 @@
   display: flex;
   flex-direction: column;
   gap: 3rem;
+  position: relative;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.iconBtn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: var(--surface-container);
+  border: 1px solid var(--glass-border);
+  color: var(--outline);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.iconBtn:hover {
+  background: var(--surface-container-high);
+  color: white;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid var(--primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profileDropdown {
+  position: absolute;
+  top: 90px;
+  right: 4rem;
+  width: 240px;
+  background: var(--surface-container);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  z-index: 100;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.dropdownUser {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dropdownAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.dropdownInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dropdownName {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownEmail {
+  color: var(--outline);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: var(--glass-border);
+  margin: 0.75rem 0;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  color: var(--outline);
+  text-decoration: none;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdownItem:hover {
+  background: var(--surface-container-high);
+  color: white;
+}
+
+.dropdownItem.logout {
+  color: #ff4b4b;
+}
+
+.dropdownItem.logout:hover {
+  background: rgba(255, 75, 75, 0.1);
 }
 
 .title {
@@ -76,6 +215,12 @@
   gap: 2rem;
 }
 
+.dashboardSection {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .sectionHeader {
   display: flex;
   justify-content: space-between;
@@ -84,115 +229,191 @@
 }
 
 .sectionTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--outline);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.textBtn {
-  background: transparent;
-  border: none;
-  color: var(--primary);
-  font-weight: 600;
+.card {
+  background: var(--surface-container);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+}
+
+/* Match Strength Card */
+.matchStrengthContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.progressRing {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.progressText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.progressValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+}
+
+.progressLabel {
+  font-size: 0.75rem;
+  color: var(--outline);
+}
+
+.matchNote {
   font-size: 0.875rem;
+  color: var(--outline);
+  line-height: 1.5;
+}
+
+/* Skills Card */
+.skillsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.skillPill {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  cursor: pointer;
-}
-
-.teamHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-}
-
-.teamInfo h3 {
-  font-size: 1.25rem;
-  margin-bottom: 0.25rem;
-}
-
-.teamInfo p {
-  color: var(--outline);
-  font-size: 0.875rem;
-}
-
-.statusBadge {
-  background: rgba(34, 197, 94, 0.1);
-  color: #4ade80;
-  padding: 0.25rem 0.75rem;
-  border-radius: 99px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.teamMembers {
-  display: flex;
-  align-items: center;
-}
-
-.memberAvatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid var(--surface-container);
-  margin-right: -12px;
-  overflow: hidden;
-}
-
-.memberAvatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.addMember {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
   background: var(--surface-container-high);
-  border: 2px dashed var(--outline-variant);
+  border: 1px solid var(--glass-border);
+  padding: 0.5rem 1rem;
+  border-radius: 99px;
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+
+.removeSkill {
+  background: transparent;
+  border: none;
+  color: var(--outline);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--outline);
-  cursor: pointer;
-  margin-left: 12px;
+  padding: 0;
 }
 
+.removeSkill:hover {
+  color: #ff4b4b;
+}
+
+.addSkillBtn {
+  background: transparent;
+  border: 1px dashed var(--outline-variant);
+  color: var(--primary);
+  padding: 0.5rem 1.25rem;
+  border-radius: 99px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.addSkillBtn:hover {
+  border-color: var(--primary);
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.skillInput {
+  background: var(--surface-container-high);
+  border: 1px solid var(--primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 99px;
+  font-size: 0.875rem;
+  outline: none;
+  width: 120px;
+}
+
+/* Activity Feed */
 .activityList {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0;
 }
 
 .activityItem {
   display: flex;
+  align-items: center;
   gap: 1.25rem;
+  padding: 1.25rem 0;
+  border-left: 3px solid var(--primary);
+  padding-left: 1.5rem;
 }
 
-.activityDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--primary);
-  margin-top: 6px;
-  box-shadow: 0 0 10px var(--primary);
+.activityItem:not(:last-child) {
+  border-bottom: 1px solid var(--glass-border);
 }
 
-.activityContent p {
+.activityIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--primary);
+}
+
+.activityInfo {
+  flex: 1;
+}
+
+.activityText {
   font-size: 0.9375rem;
+  color: white;
   margin-bottom: 0.25rem;
 }
 
-.activityContent span {
+.activityTime {
   font-size: 0.75rem;
-  color: var(--outline-variant);
+  color: var(--outline);
 }
 
 @media (max-width: 1200px) {
   .grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 2rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  
+  .headerActions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
