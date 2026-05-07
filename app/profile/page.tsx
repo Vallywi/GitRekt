@@ -15,6 +15,7 @@ export default function ProfilePage() {
     school: 'UP Diliman',
     github: 'github.com/angelo-reyes',
     skills: ['React', 'TypeScript', 'Next.js', 'Node.js', 'Taglish NLP', 'PostgreSQL'],
+    vibe: 'Collaborative',
     stats: {
       hackathons: 12,
       wins: 4,
