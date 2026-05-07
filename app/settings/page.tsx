@@ -1,97 +1,157 @@
 'use client';
 
 import AppLayout from '../../components/AppLayout';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
+  const router = useRouter();
+  const [profile, setProfile] = useState({
+    name: 'Alex Vance',
+    role: 'Senior Backend Engineer @ Neura',
+    bio: 'Specializing in distributed systems and high-frequency trading infrastructure. Looking for ambitious co-founders.',
+    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=300'
+  });
+
+  const [activeTab, setActiveTab] = useState('profile');
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Load user data from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('hackmatch_user_profile');
+    if (saved) {
+      const data = JSON.parse(saved);
+      setProfile({
+        name: data.name || profile.name,
+        role: data.role || profile.role,
+        bio: data.bio || profile.bio,
+        image: data.image || profile.image
+      });
+    }
+  }, []);
+
+  const handleSave = () => {
+    localStorage.setItem('hackmatch_user_profile', JSON.stringify(profile));
+    alert('Settings saved! Your profile is updated. 🚀');
+  };
+
+  const handleLogout = () => {
+    router.push('/');
+  };
+
   return (
     <AppLayout>
-      <div className="p-margin md:p-xl max-w-container-max mx-auto w-full pb-32 mt-16 lg:mt-0">
-        <header className="mb-lg">
-          <h2 className="font-h1 text-h1 text-on-surface">Settings</h2>
-          <p className="font-body-lg text-body-lg text-on-surface-variant mt-2">Manage your premium elite profile and preferences.</p>
-        </header>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-          {/* Left Column: Navigation/Summary within content area (optional, for complex settings) */}
-          <div className="lg:col-span-3 flex flex-col gap-4">
-            <div className="glass-panel rounded-xl p-sm flex flex-col gap-2">
-              <a className="text-primary font-body-sm p-2 rounded-lg bg-white/5 hover:text-primary transition-colors" href="#profile">Edit Profile</a>
-              <a className="text-on-surface-variant font-body-sm p-2 rounded-lg hover:bg-white/5 hover:text-primary transition-colors" href="#security">Security & Password</a>
-              <a className="text-on-surface-variant font-body-sm p-2 rounded-lg hover:bg-white/5 hover:text-primary transition-colors" href="#notifications">Notifications</a>
-              <a className="text-on-surface-variant font-body-sm p-2 rounded-lg hover:bg-white/5 hover:text-primary transition-colors" href="#privacy">Privacy</a>
+      <div className="p-6 md:p-12 max-w-7xl mx-auto w-full pb-32 mt-16 lg:mt-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Settings Sidebar */}
+          <div className="lg:col-span-3 space-y-6">
+            <div className="bg-[#0f0f12]/60 backdrop-blur-3xl border border-white/[0.05] rounded-3xl p-4 flex flex-col gap-2">
+              <button 
+                onClick={() => setActiveTab('profile')}
+                className={`text-left p-4 rounded-2xl transition-all font-bold text-[14px] ${activeTab === 'profile' ? 'bg-primary/20 text-primary shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+              >
+                Edit Profile
+              </button>
+              <button 
+                onClick={() => setActiveTab('security')}
+                className={`text-left p-4 rounded-2xl transition-all font-bold text-[14px] ${activeTab === 'security' ? 'bg-primary/20 text-primary' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+              >
+                Security & Password
+              </button>
+              <button 
+                onClick={() => setActiveTab('notifications')}
+                className={`text-left p-4 rounded-2xl transition-all font-bold text-[14px] ${activeTab === 'notifications' ? 'bg-primary/20 text-primary' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+              >
+                Notifications
+              </button>
+              <button 
+                onClick={() => setActiveTab('privacy')}
+                className={`text-left p-4 rounded-2xl transition-all font-bold text-[14px] ${activeTab === 'privacy' ? 'bg-primary/20 text-primary' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+              >
+                Privacy
+              </button>
             </div>
 
-            <div className="glass-panel rounded-xl p-md mt-4 flex items-center justify-between group cursor-pointer hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] transition-all">
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-outline group-hover:text-primary transition-colors">dark_mode</span>
-                <span className="font-body-md text-on-surface">Theme</span>
+            {/* Theme Toggle */}
+            <div className="bg-[#0f0f12]/60 backdrop-blur-3xl border border-white/[0.05] rounded-3xl p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3 text-white">
+                <span className="material-symbols-outlined text-slate-400">dark_mode</span>
+                <span className="font-bold text-[14px]">Theme</span>
               </div>
-              <div className="w-12 h-6 bg-surface-container-highest rounded-full p-1 relative flex items-center cursor-pointer">
-                <div className="w-4 h-4 bg-primary rounded-full absolute right-1 shadow-[0_0_10px_rgba(208,188,255,0.8)]"></div>
-              </div>
+              <button 
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`w-12 h-6 rounded-full p-1 transition-all relative ${isDarkMode ? 'bg-primary' : 'bg-slate-700'}`}
+              >
+                <div className={`w-4 h-4 bg-white rounded-full transition-all ${isDarkMode ? 'translate-x-6' : 'translate-x-0'}`}></div>
+              </button>
             </div>
 
-            <button className="mt-8 flex items-center gap-2 text-error hover:text-error-container font-label-caps text-label-caps transition-colors p-2">
+            {/* Logout Button */}
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-error/80 hover:text-error transition-colors p-4 font-bold uppercase tracking-widest text-[12px]"
+            >
               <span className="material-symbols-outlined">logout</span>
               Logout
             </button>
           </div>
 
-          {/* Right Column: Forms */}
-          <div className="lg:col-span-9 flex flex-col gap-gutter">
-            {/* Profile Settings */}
-            <section className="glass-panel rounded-xl p-md md:p-lg" id="profile">
-              <h3 className="font-h3 text-h3 text-on-surface border-b border-white/10 pb-4 mb-6">Edit Profile</h3>
+          {/* Main Content Area */}
+          <div className="lg:col-span-9">
+            <div className="bg-[#0f0f12]/60 backdrop-blur-3xl border border-white/[0.05] rounded-[32px] p-8 md:p-10 shadow-2xl">
+              <h2 className="text-3xl font-bold text-white mb-10 pb-6 border-b border-white/[0.05]">Edit Profile</h2>
               
-              <div className="flex flex-col md:flex-row gap-8 items-start mb-8">
+              <div className="flex flex-col md:flex-row gap-10 items-start mb-10">
                 <div className="relative group cursor-pointer shrink-0">
-                  <img alt="User Avatar" className="w-24 h-24 rounded-full object-cover border-2 border-primary/50 shadow-[0_0_20px_rgba(139,92,246,0.2)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3FLqY0D99DOxlePOFL1Keg7aHiSd1yQ0C10tQ2eRWYO2dZb_-DWqXbn9f37o1yBiVsL0T-iJxH6FR0rf7DbF5XpQH0SHCT9nQmgPiBuUi0avSFf_GvECGVu4ek5f4NjTUwCsxkc-x6JUV5NyO6RGw3SiL4E8n8Bg_a4nMXTZNPzshnBYHPe35ZPI9sbTXnIyhDGfDaopedGGYUPkbJ3mKkZ45T_mIX21wLs2bw6MC7U0wOUkgINBdho91yTI5VBHcTN0YSd3IDoU"/>
-                  <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-outlined text-white">photo_camera</span>
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 shadow-[0_0_20px_rgba(139,92,246,0.2)]">
+                    <img alt="User Avatar" className="w-full h-full object-cover" src={profile.image}/>
+                  </div>
+                  <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[2px]">
+                    <span className="material-symbols-outlined text-white text-[20px]">photo_camera</span>
                   </div>
                 </div>
 
-                <div className="flex-1 w-full space-y-4">
+                <div className="flex-1 w-full space-y-6">
                   <div>
-                    <label className="block font-label-caps text-label-caps text-outline mb-2">Display Name</label>
-                    <input className="w-full bg-white/5 border-b border-outline/30 text-on-surface font-body-md py-2 px-3 focus:outline-none focus:bg-white/10 input-focus-border transition-all" type="text" defaultValue="Alex Vance"/>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Display Name</label>
+                    <input 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-medium focus:border-primary/50 outline-none transition-all"
+                      type="text" 
+                      value={profile.name}
+                      onChange={(e) => setProfile({...profile, name: e.target.value})}
+                    />
                   </div>
                   <div>
-                    <label className="block font-label-caps text-label-caps text-outline mb-2">Headline</label>
-                    <input className="w-full bg-white/5 border-b border-outline/30 text-on-surface font-body-md py-2 px-3 focus:outline-none focus:bg-white/10 input-focus-border transition-all" type="text" defaultValue="Senior Backend Engineer @ Neura"/>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Headline</label>
+                    <input 
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-medium focus:border-primary/50 outline-none transition-all"
+                      type="text" 
+                      value={profile.role}
+                      onChange={(e) => setProfile({...profile, role: e.target.value})}
+                    />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4 mb-8">
-                <div>
-                  <label className="block font-label-caps text-label-caps text-outline mb-2">Bio</label>
-                  <textarea className="w-full bg-white/5 border border-outline/20 rounded-lg text-on-surface font-body-sm p-3 focus:outline-none focus:border-primary focus:shadow-[0_0_15px_rgba(208,188,255,0.1)] transition-all resize-none" rows={3} defaultValue="Specializing in distributed systems and high-frequency trading infrastructure. Looking for ambitious co-founders."></textarea>
-                </div>
+              <div className="space-y-2 mb-10">
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Bio</label>
+                <textarea 
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl text-white font-medium p-4 focus:border-primary outline-none transition-all resize-none h-32"
+                  value={profile.bio}
+                  onChange={(e) => setProfile({...profile, bio: e.target.value})}
+                ></textarea>
               </div>
 
-              <div className="flex justify-end">
-                <button className="bg-gradient-to-r from-primary-container to-inverse-primary text-white font-label-caps text-label-caps py-2 px-6 rounded-lg hover:brightness-110 hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all">Save Changes</button>
+              <div className="flex justify-end pt-6 border-t border-white/[0.05]">
+                <button 
+                  onClick={handleSave}
+                  className="bg-primary text-on-primary font-bold px-8 py-3 rounded-xl hover:brightness-110 shadow-[0_4px_20px_rgba(139,92,246,0.3)] transition-all active:scale-95"
+                >
+                  Save Changes
+                </button>
               </div>
-            </section>
-
-            {/* Security Settings */}
-            <section className="glass-panel rounded-xl p-md md:p-lg" id="security">
-              <h3 className="font-h3 text-h3 text-on-surface border-b border-white/10 pb-4 mb-6">Security</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block font-label-caps text-label-caps text-outline mb-2">Current Password</label>
-                  <input className="w-full max-w-md bg-white/5 border-b border-outline/30 text-on-surface font-body-md py-2 px-3 focus:outline-none focus:bg-white/10 input-focus-border transition-all" placeholder="••••••••" type="password"/>
-                </div>
-                <div>
-                  <label className="block font-label-caps text-label-caps text-outline mb-2">New Password</label>
-                  <input className="w-full max-w-md bg-white/5 border-b border-outline/30 text-on-surface font-body-md py-2 px-3 focus:outline-none focus:bg-white/10 input-focus-border transition-all" placeholder="••••••••" type="password"/>
-                </div>
-                <div>
-                  <button className="border border-white/20 text-on-surface font-label-caps text-label-caps py-2 px-6 rounded-lg hover:bg-white/5 hover:border-primary/50 transition-all">Update Password</button>
-                </div>
-              </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>

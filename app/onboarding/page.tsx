@@ -22,6 +22,7 @@ export default function OnboardingPage() {
     interests: [] as string[],
     role: '',
     skills: [] as string[],
+    vibe: '',
     isFirstTime: false
   });
 
@@ -201,10 +202,17 @@ export default function OnboardingPage() {
                   {['Competitive & High-Speed', 'Learning & Collaborative', 'Chill & Fun-Focused'].map(vibe => (
                     <button
                       key={vibe}
-                      className="w-full p-6 rounded-2xl bg-white/5 border border-white/10 text-left hover:border-primary/50 transition-all flex items-center justify-between group"
+                      onClick={() => setSelections({...selections, vibe})}
+                      className={`w-full p-6 rounded-2xl border text-left transition-all flex items-center justify-between group ${
+                        selections.vibe === vibe
+                          ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(139,92,246,0.2)]'
+                          : 'bg-white/5 border-white/10 text-slate-400 hover:border-primary/50'
+                      }`}
                     >
-                      <span className="font-bold text-white group-hover:text-primary transition-colors">{vibe}</span>
-                      <span className="material-symbols-outlined text-slate-500">chevron_right</span>
+                      <span className={`font-bold transition-colors ${selections.vibe === vibe ? 'text-primary' : 'text-white group-hover:text-primary'}`}>{vibe}</span>
+                      <span className={`material-symbols-outlined transition-colors ${selections.vibe === vibe ? 'text-primary' : 'text-slate-500'}`}>
+                        {selections.vibe === vibe ? 'check_circle' : 'chevron_right'}
+                      </span>
                     </button>
                   ))}
                 </div>

@@ -11,6 +11,9 @@ export default function WelcomePage() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [university, setUniversity] = useState('');
+  const [course, setCourse] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,14 +27,33 @@ export default function WelcomePage() {
       if (isLogin) {
         // LOGIN LOGIC: Check if user exists
         if (MOCK_REGISTERED_USERS.includes(email.toLowerCase())) {
-          router.push('/dashboard');
+          // Fetch persistent profile from Redis
+          fetch(`/api/user/profile?email=${email.toLowerCase()}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.name) {
+                localStorage.setItem('hackmatch_user_profile', JSON.stringify(data));
+              }
+              router.push('/dashboard');
+            })
+            .catch(() => router.push('/dashboard'));
         } else {
           setError('Account not found. Mangyaring mag-Sign Up muna! 🇵🇭');
           setIsLoading(false);
         }
       } else {
         // SIGN UP LOGIC: Register the user
-        // Redirect NEW users to Onboarding
+        // Save initial profile data to localStorage
+        localStorage.setItem('hackmatch_user_profile', JSON.stringify({
+          name: fullName,
+          university: university,
+          course: course,
+          email: email,
+          interests: [],
+          skills: [],
+          role: ''
+        }));
+        
         MOCK_REGISTERED_USERS.push(email.toLowerCase());
         router.push('/onboarding');
       }
@@ -107,6 +129,8 @@ export default function WelcomePage() {
                       className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                       placeholder="e.g. Juan Dela Cruz" 
                       type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
                       required
                     />
                   </div>
@@ -118,6 +142,8 @@ export default function WelcomePage() {
                         className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                         placeholder="UP Diliman" 
                         type="text"
+                        value={university}
+                        onChange={(e) => setUniversity(e.target.value)}
                         required
                       />
                     </div>
@@ -127,6 +153,8 @@ export default function WelcomePage() {
                         className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                         placeholder="BS CS" 
                         type="text"
+                        value={course}
+                        onChange={(e) => setCourse(e.target.value)}
                         required
                       />
                     </div>

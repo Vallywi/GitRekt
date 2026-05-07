@@ -26,16 +26,19 @@ export default function ProfilePage() {
     ]
   });
 
-  // Load onboarding data if it exists
+  // Load onboarding/sign-up data if it exists
   useEffect(() => {
     const savedProfile = localStorage.getItem('hackmatch_user_profile');
     if (savedProfile) {
       const data = JSON.parse(savedProfile);
       setProfile(prev => ({
         ...prev,
+        name: data.name || prev.name,
+        school: data.university || prev.school,
         role: data.role || prev.role,
-        skills: data.skills.length > 0 ? data.skills : prev.skills,
-        bio: data.isFirstTime ? `First-time hacker ready to learn and build! Interested in ${data.interests.join(', ')}.` : prev.bio
+        skills: (data.skills && data.skills.length > 0) ? data.skills : prev.skills,
+        vibe: data.vibe || prev.vibe,
+        bio: data.isFirstTime ? `First-time hacker ready to learn and build! Interested in ${data.interests?.join(', ') || 'tech'}. Preferred vibe: ${data.vibe || 'Collaborative'}.` : prev.bio
       }));
     }
   }, []);

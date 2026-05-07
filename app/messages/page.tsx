@@ -4,6 +4,7 @@ import AppLayout from '../../components/AppLayout';
 import { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import Pusher from 'pusher-js';
 
 type Message = {
   id: number;
@@ -99,6 +100,35 @@ function MessagesContent() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Initialize Pusher for Live Chat
+  useEffect(() => {
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY || '', {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER || 'ap1',
+    });
+
+    const channel = pusher.subscribe(`chat-${activeChatId}`);
+    
+    channel.bind('new-message', (newMessage: Message) => {
+      // Avoid adding our own message twice if we already added it locally
+      if (!newMessage.isMe) {
+        setChats(prevChats => prevChats.map(chat => {
+          if (chat.id === activeChatId) {
+            return {
+              ...chat,
+              messages: [...chat.messages, { ...newMessage, isMe: false }]
+            };
+          }
+          return chat;
+        }));
+      }
+    });
+
+    return () => {
+      pusher.unsubscribe(`chat-${activeChatId}`);
+      pusher.disconnect();
+    };
+  }, [activeChatId]);
+
   // Auto-Select or Create Chat
   useEffect(() => {
     if (targetUser) {
@@ -181,7 +211,7 @@ function MessagesContent() {
     scrollToBottom();
   }, [activeChat.messages, isTyping]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
@@ -195,12 +225,24 @@ function MessagesContent() {
       status: 'sent'
     };
 
+    // 1. Update UI locally
     setChats(chats.map(chat => 
       chat.id === activeChatId 
         ? { ...chat, messages: [...chat.messages, newMessage] }
         : chat
     ));
     setInputValue('');
+
+    // 2. Trigger Pusher for the other user
+    try {
+      await fetch('/api/messages/send', {
+        method: 'POST',
+        body: JSON.stringify({ chatId: activeChatId, message: newMessage }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } catch (e) {
+      console.error('Failed to send live message');
+    }
   };
 
   return (

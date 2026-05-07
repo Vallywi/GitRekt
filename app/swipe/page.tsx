@@ -310,10 +310,35 @@ const MOCK_PROFILES = [
 
 export default function SwipePage() {
   const router = useRouter();
+  const [profiles, setProfiles] = useState(MOCK_PROFILES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
 
-  const currentProfile = MOCK_PROFILES[currentIndex % MOCK_PROFILES.length];
+  // Fetch real users from database and add to swipe pool
+  useEffect(() => {
+    fetch('/api/user/swipable')
+      .then(res => res.json())
+      .then(realUsers => {
+        if (Array.isArray(realUsers) && realUsers.length > 0) {
+          // Map real users to the MOCK_PROFILE format
+          const mappedRealUsers = realUsers.map((u: any, idx: number) => ({
+            id: `real-${idx}`,
+            name: u.name,
+            role: u.role || 'Elite Developer',
+            bio: u.bio || 'Building something epic.',
+            image: u.image || `https://images.unsplash.com/photo-${1539571696357 + idx}-5a69c17a67c6?auto=format&fit=crop&q=80&w=400`,
+            skills: u.skills || ['React', 'Engineering'],
+            school: u.university || u.school || 'UP Diliman',
+            matches: 95
+          }));
+          
+          setProfiles(prev => [...mappedRealUsers, ...prev]);
+        }
+      })
+      .catch(err => console.error('Failed to load real users:', err));
+  }, []);
+
+  const currentProfile = profiles[currentIndex % profiles.length];
 
   const handleSwipe = (dir: 'left' | 'right') => {
     setDirection(dir);

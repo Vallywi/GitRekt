@@ -8,8 +8,23 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleLogout = () => {
-    // Clear any session data if needed
+  const handleLogout = async () => {
+    // Save to database before logging out
+    const savedProfile = localStorage.getItem('hackmatch_user_profile');
+    if (savedProfile) {
+      const profileData = JSON.parse(savedProfile);
+      if (profileData.email) {
+        try {
+          await fetch('/api/user/profile', {
+            method: 'POST',
+            body: JSON.stringify({ email: profileData.email, profile: profileData }),
+            headers: { 'Content-Type': 'application/json' }
+          });
+        } catch (e) {
+          console.error('Failed to sync on logout');
+        }
+      }
+    }
     router.push('/');
   };
 
