@@ -1,9 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function WelcomePage() {
   const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="bg-[#000000] text-on-surface font-body-md min-h-screen flex items-center justify-center relative overflow-hidden py-12">
       {/* Background Glows */}
@@ -33,7 +37,7 @@ export default function WelcomePage() {
           </p>
         </div>
 
-        {/* Right side: Login Card */}
+        {/* Right side: Auth Card */}
         <div className="w-full max-w-[420px] relative group">
           {/* Subtle Outer Card Glow */}
           <div className="absolute -inset-[2px] bg-[#8b5cf6]/20 blur-xl rounded-[34px] -z-10 opacity-50"></div>
@@ -42,9 +46,23 @@ export default function WelcomePage() {
             {/* Inner top glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-[#8b5cf6]/20 to-transparent"></div>
             
-            <h3 className="text-2xl text-white mb-10 text-center font-bold tracking-tight">Welcome Back</h3>
+            <h3 className="text-2xl text-white mb-10 text-center font-bold tracking-tight">
+              {isLogin ? 'Welcome Back' : 'Create Account'}
+            </h3>
             
             <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); router.push('/onboarding'); }}>
+              {!isLogin && (
+                <div className="space-y-2">
+                  <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Full Name</label>
+                  <input 
+                    className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
+                    placeholder="Enter your name" 
+                    type="text"
+                    required
+                  />
+                </div>
+              )}
+              
               <div className="space-y-2">
                 <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Email</label>
                 <input 
@@ -57,37 +75,67 @@ export default function WelcomePage() {
               
               <div className="space-y-2">
                 <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Password</label>
-                <input 
-                  className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
-                  placeholder="Enter your password" 
-                  type="password"
-                  required
-                />
+                <div className="relative">
+                  <input 
+                    className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10 pr-12" 
+                    placeholder="Enter your password" 
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#8b5cf6] transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">
+                      {showPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
+                </div>
               </div>
-              
-              <div className="space-y-2">
-                <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">University</label>
-                <input 
-                  className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
-                  placeholder="Enter your university" 
-                  type="text"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Course</label>
-                <input 
-                  className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
-                  placeholder="Enter your course" 
-                  type="text"
-                />
-              </div>
+
+              {!isLogin && (
+                <>
+                  <div className="space-y-2">
+                    <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">University</label>
+                    <input 
+                      className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
+                      placeholder="e.g. UP Diliman" 
+                      type="text"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Course</label>
+                    <input 
+                      className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
+                      placeholder="e.g. BS Computer Science" 
+                      type="text"
+                      required
+                    />
+                  </div>
+                </>
+              )}
 
               <button type="submit" className="w-full py-4 rounded-full bg-[#8b5cf6] text-white text-[14px] font-bold flex items-center justify-center hover:brightness-110 shadow-[0_4px_20px_rgba(139,92,246,0.4)] transition-all mt-8">
-                Login
+                {isLogin ? 'Login' : 'Sign Up'}
               </button>
 
-              <div className="flex items-center gap-4 py-2">
+              <div className="text-center mt-6">
+                <p className="text-[13px] text-[#64748b]">
+                  {isLogin ? "Don't have an account?" : "Already have an account?"}
+                  <button 
+                    type="button" 
+                    onClick={() => setIsLogin(!isLogin)}
+                    className="ml-2 text-[#8b5cf6] font-bold hover:underline transition-all"
+                  >
+                    {isLogin ? 'Sign Up' : 'Login'}
+                  </button>
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4 py-2 mt-4">
                 <div className="h-[1px] bg-white/[0.05] flex-1"></div>
                 <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-widest">Or</span>
                 <div className="h-[1px] bg-white/[0.05] flex-1"></div>

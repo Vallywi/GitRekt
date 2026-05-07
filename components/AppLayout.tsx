@@ -1,11 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear any session data if needed
+    router.push('/');
+  };
 
   return (
     <div className="bg-abyss text-on-surface font-body-md antialiased min-h-screen flex overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
@@ -49,6 +55,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <span className="material-symbols-outlined" style={pathname === '/settings' ? { fontVariationSettings: "'FILL' 1" } : {}}>settings</span>
             <span>Settings</span>
           </Link>
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-xs p-sm font-label-caps text-label-caps rounded-xl transition-all text-on-surface-variant hover:bg-error/10 hover:text-error w-full text-left group"
+          >
+            <span className="material-symbols-outlined group-hover:rotate-12 transition-transform">logout</span>
+            <span>Log Out</span>
+          </button>
         </div>
       </nav>
 

@@ -3,6 +3,7 @@
 import AppLayout from '../../components/AppLayout';
 import { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type Message = {
   id: number;
@@ -11,6 +12,7 @@ type Message = {
   time: string;
   content: string;
   isMe: boolean;
+  status?: 'sending' | 'sent' | 'seen';
   file?: {
     name: string;
     size: string;
@@ -53,23 +55,8 @@ const INITIAL_CHATS: Chat[] = [
         avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100',
         time: '10:45 AM',
         content: "Solid design, Maria! The Inter font really works for the professional look. I'll start coding the hero section.",
-        isMe: true
-      }
-    ]
-  },
-  {
-    id: 'backend-api',
-    name: 'backend-api',
-    type: 'channel',
-    description: 'PostgreSQL & Supabase integration chat',
-    messages: [
-      {
-        id: 1,
-        sender: 'Kevin Panganiban',
-        avatar: 'https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?auto=format&fit=crop&q=80&w=100',
-        time: 'Yesterday',
-        content: "Database schema is locked. Migration files are in the repo. Angelo, please review the user table structure.",
-        isMe: false
+        isMe: true,
+        status: 'seen'
       }
     ]
   },
@@ -95,25 +82,8 @@ const INITIAL_CHATS: Chat[] = [
         avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100',
         time: '11:06 AM',
         content: "Oo nga eh, competitive. Need natin ayusin yung pitch natin.",
-        isMe: true
-      }
-    ]
-  },
-  {
-    id: 'bianca-dela-cruz',
-    name: 'Bianca Dela Cruz',
-    type: 'dm',
-    status: 'online',
-    lastMessage: 'NLP models are ready.',
-    lastTime: '15m',
-    messages: [
-      {
-        id: 1,
-        sender: 'Bianca Dela Cruz',
-        avatar: 'https://images.unsplash.com/photo-1548142813-c348350df52b?auto=format&fit=crop&q=80&w=100',
-        time: 'Yesterday',
-        content: "I finished the Taglish sentiment analysis model. Accuracy is at 89%!",
-        isMe: false
+        isMe: true,
+        status: 'seen'
       }
     ]
   }
@@ -126,15 +96,16 @@ function MessagesContent() {
   const [chats, setChats] = useState<Chat[]>(INITIAL_CHATS);
   const [activeChatId, setActiveChatId] = useState<string>(INITIAL_CHATS[0].id);
   const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Auto-Select or Create Chat
   useEffect(() => {
     if (targetUser) {
       const existingChat = chats.find(c => c.name.toLowerCase().includes(targetUser.toLowerCase()));
       if (existingChat) {
         setActiveChatId(existingChat.id);
       } else {
-        // Create a temporary chat for the new person
         const newChat: Chat = {
           id: targetUser.toLowerCase().replace(/\s+/g, '-'),
           name: targetUser,
@@ -159,13 +130,56 @@ function MessagesContent() {
 
   const activeChat = chats.find(c => c.id === activeChatId) || chats[0];
 
+  // Live Auto-Reply Simulation
+  useEffect(() => {
+    const lastMessage = activeChat.messages[activeChat.messages.length - 1];
+    
+    if (lastMessage && lastMessage.isMe && lastMessage.sender === 'You') {
+      // Simulate "Seen" after 1 second
+      setTimeout(() => {
+        setChats(prev => prev.map(chat => {
+          if (chat.id === activeChatId) {
+            const updatedMessages = [...chat.messages];
+            updatedMessages[updatedMessages.length - 1] = { ...lastMessage, status: 'seen' };
+            return { ...chat, messages: updatedMessages };
+          }
+          return chat;
+        }));
+      }, 1000);
+
+      // Simulate "Typing..." after 2 seconds
+      setTimeout(() => {
+        setIsTyping(true);
+        
+        // Simulate "Reply" after 4 seconds
+        setTimeout(() => {
+          setIsTyping(false);
+          const replyMessage: Message = {
+            id: Date.now(),
+            sender: activeChat.name,
+            avatar: activeChat.type === 'dm' ? activeChat.messages[0].avatar : 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=100',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            content: "Solid lodi! G ako dyan. Let's build it! 🚀",
+            isMe: false
+          };
+          
+          setChats(prev => prev.map(chat => 
+            chat.id === activeChatId 
+              ? { ...chat, messages: [...chat.messages, replyMessage] }
+              : chat
+          ));
+        }, 2000);
+      }, 2000);
+    }
+  }, [activeChat.messages.length, activeChatId]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [activeChat.messages]);
+  }, [activeChat.messages, isTyping]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,7 +191,8 @@ function MessagesContent() {
       avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       content: inputValue,
-      isMe: true
+      isMe: true,
+      status: 'sent'
     };
 
     setChats(chats.map(chat => 
@@ -258,6 +273,7 @@ function MessagesContent() {
               <div>
                 <h3 className="font-bold text-white text-[16px] flex items-center gap-2">
                   {activeChat.type === 'channel' ? `#${activeChat.name}` : activeChat.name}
+                  {isTyping && <span className="text-[10px] text-primary italic lowercase tracking-tight animate-pulse ml-2">Typing...</span>}
                 </h3>
                 <p className="text-[11px] text-slate-500 font-medium uppercase tracking-widest">{activeChat.type === 'channel' ? activeChat.description : (activeChat.status === 'online' ? 'Online' : 'Offline')}</p>
               </div>
@@ -279,6 +295,14 @@ function MessagesContent() {
                     <div className={`px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${msg.isMe ? 'bg-primary text-on-primary rounded-tr-none shadow-lg' : 'bg-white/[0.03] border border-white/[0.05] text-white rounded-tl-none'}`}>
                       {msg.content}
                     </div>
+                    {msg.isMe && (
+                      <div className="flex items-center justify-end gap-1 px-1 opacity-60">
+                        <span className="text-[9px] text-slate-400 font-bold uppercase">{msg.status === 'seen' ? 'Seen' : 'Sent'}</span>
+                        <span className="material-symbols-outlined text-[10px] text-primary" style={{ fontVariationSettings: msg.status === 'seen' ? "'FILL' 1" : "'FILL' 0" }}>
+                          {msg.status === 'seen' ? 'check_circle' : 'check'}
+                        </span>
+                      </div>
+                    )}
                     {msg.file && (
                       <div className="bg-white/[0.02] border border-white/[0.05] p-3 rounded-xl mt-2 flex items-center gap-3 group cursor-pointer hover:bg-white/[0.04] transition-all">
                         <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
@@ -298,6 +322,22 @@ function MessagesContent() {
                 </div>
               </div>
             ))}
+            <AnimatePresence>
+              {isTyping && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="flex items-center gap-2 text-primary ml-10"
+                >
+                  <div className="flex gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.2s]"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.4s]"></span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div ref={messagesEndRef} />
           </div>
 
