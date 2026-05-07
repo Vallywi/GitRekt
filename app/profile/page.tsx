@@ -7,24 +7,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    name: 'Angelo Reyes',
-    role: 'Full-Stack Architect',
-    bio: 'Building hyper-fast web apps for the local startup scene. Exploring modern UI/UX for Filipino-centric platforms. Looking for a backend lodi to build the next super-app. Obsessed with performance and clean architecture.',
-    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400',
-    location: 'Manila, Philippines',
-    school: 'UP Diliman',
-    github: 'github.com/angelo-reyes',
-    skills: ['React', 'TypeScript', 'Next.js', 'Node.js', 'Taglish NLP', 'PostgreSQL'],
-    vibe: 'Collaborative',
+    name: '',
+    role: '',
+    bio: '',
+    image: '',
+    location: '',
+    school: '',
+    github: '',
+    skills: [] as string[],
+    vibe: '',
     stats: {
-      hackathons: 12,
-      wins: 4,
-      prizes: '₱2M+'
+      hackathons: 0,
+      wins: 0,
+      prizes: '0'
     },
-    idealTeam: [
-      { role: 'UI/UX Designer', desc: 'Focus on Pinoy-centric aesthetics and accessibility.' },
-      { role: 'Backend Lodi', desc: 'Scaling systems for peak local traffic (Shopee/Lazada style).' }
-    ]
+    idealTeam: [] as { role: string; desc: string; }[]
   });
 
   // Load onboarding/sign-up data if it exists
