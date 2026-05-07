@@ -41,6 +41,18 @@ export default function ProfilePage() {
         vibe: data.vibe || prev.vibe,
         bio: data.isFirstTime ? `First-time hacker ready to learn and build! Interested in ${data.interests?.join(', ') || 'tech'}. Preferred vibe: ${data.vibe || 'Collaborative'}.` : prev.bio
       }));
+
+      // Cloud Sync Check
+      if (data.email) {
+        fetch(`/api/user/profile?email=${data.email.toLowerCase()}`)
+          .then(res => res.json())
+          .then(cloudData => {
+            if (cloudData && cloudData.name) {
+              setProfile(prev => ({ ...prev, ...cloudData }));
+            }
+          })
+          .catch(err => console.error('Cloud sync failed:', err));
+      }
     }
   }, []);
 
@@ -70,22 +82,41 @@ export default function ProfilePage() {
           <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px]"></div>
           
           {/* Avatar Section */}
-          <div className="relative group z-10 flex-shrink-0">
-            <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl overflow-hidden border-2 border-primary/30 bg-surface shadow-2xl">
-              <img alt="Profile Image" className="w-full h-full object-cover" src={profile.image}/>
+          <div 
+            className={`relative group z-10 flex-shrink-0 ${isEditing ? 'cursor-pointer' : ''}`}
+            onClick={() => isEditing && document.getElementById('avatar-upload')?.click()}
+          >
+            <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl overflow-hidden border-2 border-primary/30 bg-surface shadow-2xl relative flex items-center justify-center">
+              {profile.image && !profile.image.includes('unsplash.com') ? (
+                <img alt={profile.name} className="w-full h-full object-cover" src={profile.image}/>
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center text-primary text-5xl md:text-7xl font-bold uppercase">
+                  {profile.name.charAt(0)}
+                </div>
+              )}
+              {isEditing && (
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                  <span className="material-symbols-outlined text-white mb-1">add_a_photo</span>
+                  <p className="text-white text-[10px] font-bold">Upload Photo</p>
+                </div>
+              )}
             </div>
-            {isEditing && (
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl opacity-100 transition-opacity p-2 text-center">
-                <span className="material-symbols-outlined text-white mb-1">add_a_photo</span>
-                <input 
-                  type="text" 
-                  value={profile.image}
-                  onChange={(e) => setProfile({...profile, image: e.target.value})}
-                  placeholder="Paste image URL"
-                  className="w-full bg-white/10 border border-white/20 rounded px-2 py-1 text-[10px] text-white focus:outline-none"
-                />
-              </div>
-            )}
+            <input 
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setProfile({...profile, image: reader.result as string});
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
           </div>
 
           <div className="flex-1 z-10 w-full">

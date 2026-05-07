@@ -30,9 +30,30 @@ export default function SettingsPage() {
     }
   }, []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    // 1. Save locally for instant UI update
     localStorage.setItem('hackmatch_user_profile', JSON.stringify(profile));
-    alert('Settings saved! Your profile is updated. 🚀');
+    
+    // 2. Sync to database immediately
+    const saved = localStorage.getItem('hackmatch_user_profile');
+    if (saved) {
+      const data = JSON.parse(saved);
+      if (data.email) {
+        try {
+          await fetch('/api/user/profile', {
+            method: 'POST',
+            body: JSON.stringify({ email: data.email, profile: profile }),
+            headers: { 'Content-Type': 'application/json' }
+          });
+          alert('Profile synchronized with database! 🚀');
+        } catch (e) {
+          console.error('Database sync failed');
+          alert('Saved locally, but database sync failed. It will retry on logout.');
+        }
+      } else {
+        alert('Settings saved locally! 🚀');
+      }
+    }
   };
 
   const handleLogout = () => {
@@ -103,13 +124,38 @@ export default function SettingsPage() {
               <h2 className="text-3xl font-bold text-white mb-10 pb-6 border-b border-white/[0.05]">Edit Profile</h2>
               
               <div className="flex flex-col md:flex-row gap-10 items-start mb-10">
-                <div className="relative group cursor-pointer shrink-0">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 shadow-[0_0_20px_rgba(139,92,246,0.2)]">
-                    <img alt="User Avatar" className="w-full h-full object-cover" src={profile.image}/>
+                <div 
+                  className="relative group cursor-pointer shrink-0"
+                  onClick={() => document.getElementById('avatar-upload')?.click()}
+                >
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 shadow-[0_0_20px_rgba(139,92,246,0.2)] bg-black/40 flex items-center justify-center">
+                    {profile.image && !profile.image.includes('unsplash.com') ? (
+                      <img alt="User Avatar" className="w-full h-full object-cover" src={profile.image}/>
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center text-primary text-3xl font-bold uppercase">
+                        {profile.name.charAt(0)}
+                      </div>
+                    )}
                   </div>
                   <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[2px]">
                     <span className="material-symbols-outlined text-white text-[20px]">photo_camera</span>
                   </div>
+                  <input 
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setProfile({...profile, image: reader.result as string});
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
                 </div>
 
                 <div className="flex-1 w-full space-y-6">

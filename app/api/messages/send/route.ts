@@ -17,8 +17,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing chatId or message' }, { status: 400 });
     }
 
-    // Trigger Pusher event
+    // 1. Trigger Pusher event for real-time delivery
     await pusher.trigger(`chat-${chatId}`, 'new-message', message);
+
+    // 2. Persist to Redis list for history
+    await redis.rpush(`chat_history:${chatId}`, message);
 
     return NextResponse.json({ success: true });
   } catch (error) {

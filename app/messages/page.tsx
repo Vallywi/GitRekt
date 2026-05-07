@@ -108,6 +108,27 @@ function MessagesContent() {
 
     const channel = pusher.subscribe(`chat-${activeChatId}`);
     
+    // Fetch History from Redis
+    fetch(`/api/messages/history?chatId=${activeChatId}`)
+      .then(res => res.json())
+      .then(history => {
+        if (Array.isArray(history) && history.length > 0) {
+          setChats(prevChats => prevChats.map(chat => {
+            if (chat.id === activeChatId) {
+              // Deduplicate and merge history
+              const existingIds = new Set(chat.messages.map(m => m.id));
+              const newHistory = history.filter(m => !existingIds.has(m.id));
+              return {
+                ...chat,
+                messages: [...chat.messages, ...newHistory]
+              };
+            }
+            return chat;
+          }));
+        }
+      })
+      .catch(err => console.error('Failed to load chat history:', err));
+
     channel.bind('new-message', (newMessage: Message) => {
       // Avoid adding our own message twice if we already added it locally
       if (!newMessage.isMe) {
