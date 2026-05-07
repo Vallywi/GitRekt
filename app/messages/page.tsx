@@ -25,6 +25,7 @@ type Chat = {
   id: string;
   name: string;
   type: 'channel' | 'dm';
+  avatar?: string;
   description?: string;
   status?: 'online' | 'offline';
   messages: Message[];
