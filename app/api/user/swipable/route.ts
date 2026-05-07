@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { Swipe } from "@prisma/client";
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -28,8 +29,8 @@ export async function GET(request: Request) {
 
     // Get IDs of users already swiped on
     const swipedUserIds = currentUser.swipes
-      .filter(s => s.targetUserId)
-      .map(s => s.targetUserId as string);
+      .filter((s: Swipe) => s.targetUserId)
+      .map((s: Swipe) => s.targetUserId as string);
 
     // Fetch users not in the swiped list and not the current user
     const swipableUsers = await prisma.user.findMany({
