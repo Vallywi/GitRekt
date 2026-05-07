@@ -1,367 +1,99 @@
-# HackMatch: Swipe-Based Hackathon Team Matchmaking Platform
+# HackMatch 🇵🇭
 
-A modern swipe-based collaboration platform that helps university students find hackathon teammates, build balanced teams, and confidently join tech events.
+**HackMatch** is a premium, high-fidelity teammate discovery platform designed specifically for students and engineering innovators. It streamlines the process of forming high-performance teams for hackathons and collaborative coding projects through an intuitive "swipe-to-match" interface.
 
----
-
-# ❗ Problem
-
-Maria, a first-year computer science student, wants to join her university’s hackathon but struggles to find teammates because she doesn’t know many people in tech communities yet. Most teams are already formed within friend groups, leaving beginners and solo participants feeling excluded and intimidated. Because of this, many talented students never participate in hackathons, lose opportunities to improve their skills, and miss valuable networking experiences.
+![HackMatch Preview](https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=1200)
 
 ---
 
-# 💡 Solution
+## 🚩 The Problem
 
-With HackMatch, students can create profiles, showcase their skills and interests, and swipe left or right on potential teammates based on compatibility, preferred roles, and hackathon goals. Once two users match, they can instantly connect, chat, and build teams together in a fun and beginner-friendly environment.
+Student developers and designers in the Philippines often struggle with **"Teammate Friction"**:
+*   **Skill Mismatch**: Joining teams that lack the specific technical expertise required for a hackathon.
+*   **Communication Gaps**: Finding potential teammates across different universities (UP, DLSU, UST, etc.) is fragmented and difficult.
+*   **Discovery Hurdles**: Upcoming local hackathons and their requirements are often scattered across multiple platforms.
+*   **Management Overload**: Coordinating tasks and communication once a team is formed is messy without a centralized system.
 
-HackMatch transforms the stressful process of finding teammates into an interactive social experience designed specifically for university hackathons and student collaboration.
+## 💡 Our Solution
 
----
+**HackMatch** centralizes the hackathon lifecycle into a single, premium experience. It provides a gesture-driven matching system that prioritizes **technical synergy** and **local context**, ensuring that student builders find their "perfect match" based on proven skills, university affiliation, and project goals.
 
-# ✨ Benefits
+## ⚙️ How It Works
 
-* 🤝 Helps solo students confidently join hackathons
-* ⚡ Fast and interactive swipe-based teammate matching
-* 🎯 AI-powered compatibility scoring
-* 🌐 Event-based networking and collaboration
-* 🧑‍💻 Beginner-friendly onboarding experience
-* 💬 Real-time communication between matched teammates
-* 🚀 Encourages inclusivity and student participation
+1.  **Discover**: Browse a curated list of high-stakes hackathons in major Philippine hubs (BGC, Makati, Cebu, Davao).
+2.  **Swipe**: Use an intuitive, Tinder-style interface to explore student profiles from top local universities.
+3.  **Match**: Connect instantly when both parties express interest.
+4.  **Coordinate**: Launch directly into a dedicated team workspace with real-time messaging and objective tracking.
 
----
+## 🚀 Features
 
-# 🧭 Overview
+- **Teammate Discovery**: An interactive, gesture-based swipe system (powered by Framer Motion) to find partners based on skill synergy, university, and project interests.
+- **Hackathon Explorer**: A curated bento-grid layout of upcoming hackathons in the Philippines (BGC, Makati, Cebu, Davao) with Prize Pools and technical requirements.
+- **Integrated Messaging**: A fully functional, real-time messaging interface for team coordination, file sharing, and channel-based discussions.
+- **Team Dashboard**: Manage your "Bayanihan" squad, track objectives, and monitor team chemistry through a centralized mission control.
+- **Premium Design System**: Built with a modern glassmorphic aesthetic, featuring vibrant purple illumination, ambient glows, and a responsive, dark-mode-first architecture.
 
-HackMatch is a swipe-driven matchmaking platform inspired by modern social applications like Tinder and Discord, but built specifically for hackathons and university tech communities.
+## 🛠️ Technology Stack
 
-Students can:
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: Material Symbols & Lucide React
+- **Localization**: Specialized for the Philippine tech ecosystem (PHP currency, local universities, and cultural context).
 
-* Discover upcoming hackathons and tech events
-* Swipe on potential teammates
-* Match with compatible collaborators
-* Create balanced teams
-* Chat and coordinate in real time
+## 📦 Getting Started
 
-The platform focuses on reducing the social barrier that prevents students from participating in hackathons and innovation events.
+### Prerequisites
 
----
+- Node.js 18.0 or higher
+- npm or yarn
 
-## 🔥 Swipe Matchmaking
+### Installation
 
-Students swipe LEFT or RIGHT on teammate profiles based on:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/HackMatch.git
+   ```
 
-* Skills
-* Interests
-* Preferred roles
-* Experience level
-* Availability
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
----
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-## 🤖 AI Compatibility Scoring
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-HackMatch generates compatibility scores based on:
+## 📂 Project Structure
 
-* Shared interests
-* Skill balance
-* Preferred roles
-* Team synergy
-* Schedule alignment
-
-Example:
-“92% Compatible — Strong frontend/backend collaboration potential.”
-
----
-
-## 🏆 Event-Based Matching
-
-Users can join specific:
-
-* Hackathons
-* Competitions
-* Startup events
-* University innovation programs
-
----
-
-## 💬 Real-Time Chat
-
-Matched users can:
-
-* Send messages
-* Create team discussions
-* Share collaboration details
-* Coordinate projects
-
----
-
-## 👥 Team Builder Dashboard
-
-Teams can:
-
-* Assign roles
-* Detect missing positions
-* View chemistry score
-* Organize members
-
----
-
-## 🌱 Beginner-Friendly Mode
-
-New students can activate:
-
-* Beginner badge
-* Mentorship matching
-* Friendly onboarding guidance
-
-This reduces social anxiety and encourages inclusivity.
-
-
----
-
-# 👥 Target Users
-
-* 🎓 University students
-* 💻 Hackathon participants
-* 🚀 Startup enthusiasts
-* 🧠 Beginner developers/designers
-* 👨‍💻 Tech organizations and communities
-* 🏫 Campus innovation groups
-
----
-
-# 🔁 How It Works
-
-## Step 1 — Create Profile
-
-Users create a profile including:
-
-* Skills
-* Interests
-* Experience level
-* Preferred role
-* Portfolio links
-
----
-
-## Step 2 — Join Event
-
-Users select a hackathon or event they want to join.
-
----
-
-## Step 3 — Swipe Matchmaking
-
-Students swipe:
-
-* LEFT = Pass
-* RIGHT = Interested
-* STAR = Super Match
-
----
-
-## Step 4 — Match System
-
-If two users swipe RIGHT:
-“It’s a Match!”
-
-Users can:
-
-* Start chatting
-* Create teams
-* Collaborate instantly
-
----
-
-## Step 5 — Build Team
-
-Matched users organize roles and prepare for competitions.
-
----
-
-# 📁 Project Structure
-
-HackMatch/
-├─ frontend/                🎨 React + Tailwind frontend
-│  ├─ src/
-│  ├─ components/
-│  ├─ pages/
-│  ├─ hooks/
-│  └─ services/
-│
-├─ backend/                 ⚙️ Node.js + Express backend
-│  ├─ routes/
-│  ├─ controllers/
-│  ├─ services/
-│  ├─ middleware/
-│  └─ database/
-│
-├─ database/                🗄️ Database models & schema
-├─ public/                  🖼️ Static assets
-└─ README.md                📘 Documentation
-
----
-
-# 🏗️ Architecture
-
-## Frontend
-
-* React / Next.js
-* TailwindCSS
-* Framer Motion
-* ShadCN UI
-
-## Backend
-
-* Node.js
-* Express.js
-
-## Database
-
-* MongoDB / PostgreSQL
-
-## Authentication
-
-* Firebase Auth / JWT
-
-## Real-Time Communication
-
-* Socket.IO
-
----
-
-# 🎨 UI/UX Design
-
-Theme:
-
-* Black & white dominant interface
-* Violet gradient highlights
-* Glassmorphism effects
-* Smooth animations
-* Premium modern startup aesthetic
-
-Inspired by:
-
-* Tinder
-* Discord
-* Linear
-* Modern SaaS products
-
----
-
-# 📱 Main Screens
-
-* Splash Screen
-* Authentication Page
-* Onboarding Flow
-* Event Discovery Page
-* Swipe Matchmaking Interface
-* Match Success Modal
-* Team Dashboard
-* Chat Interface
-* User Profile Page
-* Settings Page
-
----
-
-# 🛠️ Tech Stack
-
-Frontend:
-
-* React / Next.js
-* TailwindCSS
-* Framer Motion
-
-Backend:
-
-* Node.js
-* Express.js
-
-Database:
-
-* MongoDB / PostgreSQL
-
-Real-Time:
-
-* Socket.IO
-
-Authentication:
-
-* Firebase / JWT
-
-Deployment:
-
-* Vercel / Render / Railway
-
----
-
-# 🚀 Future Improvements
-
-* AI-generated team recommendations
-* GitHub integration
-* University verification system
-* Voice/video collaboration rooms
-* Hackathon analytics dashboard
-* Mobile app support
-* AI personality matching
-
----
-
-# ⚠️ Challenges Faced
-
-* Building smooth swipe interactions
-* Real-time matchmaking synchronization
-* Creating balanced compatibility algorithms
-* Designing beginner-friendly UX
-* Managing responsive mobile animations
-* Preventing fake or duplicate accounts
-
----
-
-# 💡 Why HackMatch Matters
-
-HackMatch helps students who lack connections confidently participate in hackathons and innovation events. By making networking interactive, social, and beginner-friendly, the platform unlocks opportunities for hidden talents to collaborate, learn, and grow together.
-
-HackMatch transforms hackathon networking from a stressful experience into a fun and accessible journey.
-
-
-
-
-
-
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```text
+├── app/               # Next.js App Router (Pages & Logic)
+│   ├── discover/      # Hackathon event exploration
+│   ├── swipe/         # Teammate matching interface
+│   ├── match/         # Match success landing
+│   ├── messages/      # Real-time chat system
+│   └── dashboard/     # Team management
+├── components/        # Reusable UI components
+├── public/            # Static assets
+└── styles/            # Global styling & Tailwind config
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌟 Why Your Project Matters
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+In the rapidly growing Philippine tech ecosystem, the greatest barrier to innovation isn't a lack of talent—it's a **lack of connection**. 
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+HackMatch empowers the next generation of Pinoy builders to step out of their university silos and form cross-institutional "dream teams." By simplifying the teammate search, we allow students to focus on what truly matters: **building solutions that solve real-world Philippine problems.**
 
-## Learn More
+## 🇵🇭 Localization
 
-To learn more about Next.js, take a look at the following resources:
+HackMatch is proudly localized for the Philippine market:
+- **Currency**: All prize pools are listed in Philippine Peso (₱).
+- **Universities**: Integrated with major institutions like UP, DLSU, UST, ADMU, and Mapua.
+- **Language**: Subtle professional Taglish integration for a familiar local experience.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with 💜 for the next generation of Pinoy builders.

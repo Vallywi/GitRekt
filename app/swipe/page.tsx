@@ -70,12 +70,6 @@ export default function SwipePage() {
     setTimeout(() => {
       setCurrentIndex((prev) => prev + 1);
       setDirection(null);
-      if (dir === 'right') {
-        // Only trigger match on right swipe for demo purposes
-        if (Math.random() > 0.6) {
-          router.push('/match');
-        }
-      }
     }, 200);
   };
 
@@ -170,7 +164,7 @@ export default function SwipePage() {
               <span className="material-symbols-outlined text-[28px] group-active:scale-90 transition-transform">star</span>
             </button>
             <button 
-              onClick={() => handleSwipe('right')}
+              onClick={handleMatch}
               className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-container to-[#6d3bd7] flex items-center justify-center text-white shadow-[0_4px_20px_rgba(139,92,246,0.4)] hover:shadow-[0_4px_30px_rgba(139,92,246,0.6)] hover:brightness-110 transition-all duration-300 group"
             >
               <span className="material-symbols-outlined text-[32px] group-active:scale-90 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
