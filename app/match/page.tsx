@@ -4,89 +4,83 @@ import Link from 'next/link';
 
 export default function MatchSuccessPage() {
   return (
-    <div className="bg-abyss text-on-surface antialiased min-h-screen flex items-center justify-center overflow-hidden relative font-body-md">
-      {/* Ambient Background Glow */}
+    <div className="bg-[#000000] text-on-surface antialiased min-h-screen flex items-center justify-center overflow-hidden relative font-body-md">
+      {/* Background Glow */}
       <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[800px] h-[800px] rounded-full bg-primary/10 blur-[120px]"></div>
+        <div className="w-[1000px] h-[1000px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.05)_0%,rgba(0,0,0,0)_70%)] opacity-80"></div>
       </div>
       
-      {/* Confetti Particles (Static representation) */}
+      {/* Decorative Particles */}
       <div className="fixed inset-0 z-10 pointer-events-none">
-        <div className="absolute w-2 h-2 rounded-full opacity-60 top-[20%] left-[30%] bg-primary"></div>
-        <div className="absolute w-3 h-3 rounded-full opacity-60 top-[40%] left-[70%] bg-secondary"></div>
-        <div className="absolute w-2 h-2 rounded-full opacity-60 top-[70%] left-[40%] bg-tertiary"></div>
-        <div className="absolute w-2 h-2 opacity-60 top-[30%] left-[80%] bg-primary-container transform rotate-45"></div>
-        <div className="absolute w-2 h-2 opacity-60 top-[60%] left-[20%] bg-secondary-container transform -rotate-12"></div>
-        <div className="absolute w-2 h-2 rounded-full opacity-60 top-[80%] left-[60%] bg-primary"></div>
-        <div className="absolute w-4 h-4 rounded-full opacity-60 top-[10%] left-[50%] bg-tertiary-container"></div>
+        <div className="absolute w-1 h-1 rounded-full bg-white/20 top-[20%] left-[20%]"></div>
+        <div className="absolute w-1.5 h-1.5 rounded-full bg-[#8b5cf6]/30 top-[40%] right-[15%]"></div>
+        <div className="absolute w-1 h-1 rounded-full bg-white/10 bottom-[30%] left-[25%]"></div>
       </div>
       
-      {/* Match Modal Container */}
-      <main className="relative z-20 w-full max-w-2xl px-sm md:px-margin">
-        <div className="glass-panel rounded-2xl p-lg md:p-xl flex flex-col items-center text-center shadow-[0_0_60px_rgba(139,92,246,0.15)] relative overflow-hidden bg-surface/10 backdrop-blur-2xl border border-white/10">
+      {/* Match Container */}
+      <main className="relative z-20 w-full max-w-[520px] px-margin">
+        <div className="bg-[#0f0f12]/90 backdrop-blur-3xl rounded-[32px] p-10 flex flex-col items-center text-center shadow-2xl border border-white/[0.05] relative overflow-hidden">
           
-          {/* Central Glow */}
-          <div className="absolute w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(139,92,246,0.3)_0%,rgba(139,92,246,0)_70%)] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none"></div>
+          {/* Inner Glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.05)_0%,transparent_100%)] pointer-events-none"></div>
           
-          {/* Header */}
-          <div className="relative z-10 mb-lg">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 text-primary mb-sm ring-1 ring-primary/30 shadow-[0_0_20px_rgba(139,92,246,0.3)]">
-              <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>electric_bolt</span>
+          {/* Lightning Header */}
+          <div className="relative z-10 mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#1e1333] text-[#8b5cf6] mb-6 border border-[#8b5cf6]/20">
+              <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>electric_bolt</span>
             </div>
-            <h1 className="font-h1 text-h1 text-on-surface mb-xs tracking-tighter">It's a Match!</h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant">You and Alex have exceptional synergy.</p>
+            <h1 className="text-[40px] font-bold text-white mb-2 tracking-tight">It's a Match!</h1>
+            <p className="text-[#94a3b8] text-[15px] font-medium opacity-80">You and Maria have exceptional synergy.</p>
           </div>
           
           {/* Avatars & Compatibility */}
-          <div className="relative z-10 flex items-center justify-center gap-xs md:gap-md w-full mb-lg">
-            {/* User Avatar */}
-            <div className="relative group">
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-outline-variant/30 glass-panel shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-                <img alt="Your profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn-4tyOpCEA1Y5C0L1PAHFj04rD6Rk3tyfCnGUCXI5kr7JPYkU6u0pWh9SUa0Cd57-aED6OrDnMqdRJ_ZEwo4us6dQgE83CLMN9Ea-nfySO2091mGH61YBManmHEIX2_j-jnl-GYqUMZ7AvxgB8Pf-BUskh5Ysp_g5mnFd5uRH-9G1Jf9nnntTLaZqIujNpASujE8J-bABqFuBA9sa7wBgBNWOGaFPaFs5siu39zPNr_kCH9t2y-LQyBV9dyQtc5GGun1zK6v0xew"/>
+          <div className="relative z-10 flex items-center justify-center w-full mb-10 mt-2">
+            <div className="flex items-center gap-0">
+              {/* User Avatar */}
+              <div className="relative z-10">
+                <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-[#1e1e24] shadow-2xl bg-[#1e1e24]">
+                  <img alt="Your profile" className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&q=80&w=300" />
+                </div>
               </div>
-            </div>
-            {/* Compatibility Badge */}
-            <div className="flex flex-col items-center justify-center z-20 -mx-4 md:-mx-8 mt-8">
-              <div className="glass-panel rounded-full px-sm py-xs border border-primary/30 shadow-[0_0_20px_rgba(139,92,246,0.4)] flex items-center gap-2 bg-surface/80">
-                <span className="font-h3 text-h3 text-primary">98%</span>
-                <span className="material-symbols-outlined text-primary text-sm">join_inner</span>
+              
+              {/* Synergy Badge */}
+              <div className="relative z-30 -mx-6 flex items-center justify-center">
+                <div className="bg-[#1e1333]/90 backdrop-blur-md rounded-full px-4 py-2 border border-[#8b5cf6]/30 shadow-[0_0_20px_rgba(139,92,246,0.2)] flex items-center gap-2">
+                  <span className="text-[15px] font-bold text-white">98%</span>
+                  <span className="material-symbols-outlined text-[#8b5cf6] text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>link</span>
+                </div>
               </div>
-            </div>
-            {/* Match Avatar */}
-            <div className="relative group">
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-outline-variant/30 glass-panel shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-                <img alt="Match profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAopfEt8g3MK7Z1crl5gsVUDopTo2_Dp9h8XHikCuxtxrxz_apCbGyAjnbME-pzCil3-HmqEYSh-BETD7dxQJs6W0fOAWN-UlOP3Jo75cBt5PMuQxjd5DgCyJVWgXudxlqCSpWHfF2stOalHUgnNIo8rsOxkQJtgqj16XQiEMJTj8-WCPQheUENHO2CY25UHq8m-T7TWruVN5XHUYRotjEUc4xGEixh80P6Okx2ziUzBVGYoxp9kzDg_f0M8tIxcM7eAXurTavqfqc"/>
+              
+              {/* Matched User Avatar */}
+              <div className="relative z-20">
+                <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-[#1e1e24] shadow-2xl bg-[#1e1e24]">
+                  <img alt="Maria Santos" className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&q=80&w=300" />
+                </div>
               </div>
             </div>
           </div>
           
-          {/* Shared Interests */}
-          <div className="relative z-10 w-full mb-xl">
-            <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-md">Shared Technical Stack</p>
-            <div className="flex flex-wrap justify-center gap-xs">
-              <span className="px-sm py-xs rounded-full bg-secondary-container/40 text-on-secondary-container font-label-caps text-label-caps border border-secondary-container/50">React</span>
-              <span className="px-sm py-xs rounded-full bg-secondary-container/40 text-on-secondary-container font-label-caps text-label-caps border border-secondary-container/50">Node.js</span>
-              <span className="px-sm py-xs rounded-full bg-secondary-container/40 text-on-secondary-container font-label-caps text-label-caps border border-secondary-container/50">System Design</span>
-              <span className="px-sm py-xs rounded-full bg-secondary-container/40 text-on-secondary-container font-label-caps text-label-caps border border-secondary-container/50">GraphQL</span>
-            </div>
+          {/* Tech Stack Chips */}
+          <div className="relative z-10 flex flex-wrap justify-center gap-2 mb-10">
+            <span className="px-4 py-1.5 rounded-full bg-[#1e1333] text-[#8b5cf6] text-[12px] font-bold border border-[#8b5cf6]/20">TypeScript</span>
+            <span className="px-4 py-1.5 rounded-full bg-[#1e1333] text-[#8b5cf6] text-[12px] font-bold border border-[#8b5cf6]/20">Next.js</span>
+            <span className="px-4 py-1.5 rounded-full bg-[#1e1333] text-[#8b5cf6] text-[12px] font-bold border border-[#8b5cf6]/20">Taglish NLP</span>
           </div>
           
-          {/* Actions */}
-          <div className="relative z-10 w-full flex flex-col gap-sm">
-            <Link href="/messages" className="w-full py-md px-lg rounded-xl bg-gradient-to-r from-inverse-primary to-primary-container text-on-primary font-h3 text-h3 flex items-center justify-center gap-sm hover:brightness-110 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)]">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>chat</span>
-              Start Chat
+          {/* Action Buttons */}
+          <div className="relative z-10 flex flex-col w-full gap-3">
+            <Link href="/messages" className="w-full py-4 rounded-2xl bg-[#8b5cf6] text-white font-bold text-[15px] shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>chat_bubble</span>
+              Start Chat with Maria
             </Link>
-            <div className="flex gap-sm w-full">
-              <Link href="/dashboard" className="flex-1 py-sm px-md rounded-xl glass-panel text-on-surface font-body-md text-body-md flex items-center justify-center gap-xs hover:bg-white/10 transition-colors border border-outline-variant/30">
-                <span className="material-symbols-outlined">group_add</span>
-                Create Team
-              </Link>
-              <Link href="/swipe" className="flex-1 py-sm px-md rounded-xl glass-panel text-on-surface font-body-md text-body-md flex items-center justify-center gap-xs hover:bg-white/10 transition-colors border border-outline-variant/30">
-                <span className="material-symbols-outlined">style</span>
-                Keep Swiping
-              </Link>
-            </div>
+            
+            <Link href="/discover" className="w-full py-4 rounded-2xl bg-[#1e1e24]/80 text-[#94a3b8] font-bold text-[15px] border border-white/[0.05] hover:bg-[#25252b] hover:text-white transition-all">
+              Join AgriTech PH Challenge
+            </Link>
+            
+            <Link href="/swipe" className="text-[#64748b] font-bold text-[13px] uppercase tracking-widest mt-4 hover:text-[#8b5cf6] transition-colors">
+              Keep Swiping
+            </Link>
           </div>
         </div>
       </main>

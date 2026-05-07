@@ -64,7 +64,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <Link href="/messages" className="text-primary hover:text-primary-container transition-colors duration-300 scale-95 active:scale-90">
               <span className="material-symbols-outlined">forum</span>
             </Link>
-            <img alt="User profile photo" className="w-8 h-8 rounded-full border border-primary object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaT2MjTX9kavsUa1c_a1D4f4Ki7aJUFiUrnlrle7SePm5JvuQNRuPk-bCoS0nKLjhP2CAstY2GzjXrmcxbBTrXsvXeygqLQ4V1ylPDEci-0TsF2aTTJHGQW-iQiI6Q85O6tn4b5S4RcPzRvmQ62hu-9MmxxPGcZRUsOla9sPIoKki7PfFIjlxF9JQlR8FLiF2fddXqkpJjjqKAmblt5mzKLSE7dlHuqIY-bdAau8vBpZi2cNYRAlj0SmVTvz28WYJwxEfyXxhOCLo"/>
+            <img alt="User profile photo" className="w-8 h-8 rounded-full border border-primary object-cover" src="https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&q=80&w=100"/>
           </div>
         </header>
         

@@ -7,158 +7,142 @@ export default function DashboardPage() {
         {/* Dashboard Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-sm mt-16 lg:mt-0">
           <div>
-            <h2 className="font-h1 text-h1 text-primary-fixed">Team Nexus</h2>
-            <p className="font-body-lg text-body-lg text-on-surface-variant mt-2">Managing Team 'Quantum Leaps' for Global AI Hack 2024</p>
+            <h2 className="text-[40px] font-bold text-[#8b5cf6] tracking-tight">Team Bayanihan</h2>
+            <p className="text-[16px] text-slate-400 font-medium mt-2">Managing Team 'Lodi Tech' for Manila AI Summit 2024</p>
           </div>
-          <div className="flex gap-sm">
-            <button className="glass-panel text-primary font-label-caps text-label-caps px-sm py-xs rounded-full flex items-center gap-xs glow-effect transition-all hover:shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-              <span className="material-symbols-outlined text-[16px]">edit</span> Edit Team
+          <div className="flex gap-4">
+            <button className="bg-white/5 border border-white/10 text-white font-bold text-[12px] uppercase tracking-widest px-6 py-2.5 rounded-xl transition-all hover:bg-white/10">
+              Edit Team
             </button>
-            <button className="bg-gradient-to-br from-primary-fixed-dim to-primary-container text-on-primary-container font-label-caps text-label-caps px-md py-xs rounded-full flex items-center gap-xs transition-all hover:brightness-110 hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]">
-              <span className="material-symbols-outlined text-[16px]">add</span> Invite Member
+            <button className="bg-[#8b5cf6] text-white font-bold text-[12px] uppercase tracking-widest px-6 py-2.5 rounded-xl transition-all hover:brightness-110 shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+              Invite Member
             </button>
           </div>
         </div>
 
         {/* Main Dashboard Grid (Bento Layout) */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* Roster Section (Spans 8 cols) */}
-          <div className="md:col-span-8 glass-panel rounded-xl p-md flex flex-col gap-md relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -z-10"></div>
-            <div className="flex justify-between items-center border-b border-white/10 pb-sm">
-              <h3 className="font-h3 text-h3 text-on-surface flex items-center gap-xs">
-                <span className="material-symbols-outlined text-primary">groups</span> Active Roster
+          <div className="md:col-span-8 bg-[#0f0f12]/40 backdrop-blur-3xl border border-white/[0.05] rounded-[24px] p-8 flex flex-col gap-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#8b5cf6]/5 rounded-full blur-[80px] -z-10"></div>
+            <div className="flex justify-between items-center border-b border-white/[0.03] pb-6">
+              <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                <span className="material-symbols-outlined text-[#8b5cf6]">groups</span> Active Roster
               </h3>
-              <span className="font-mono text-mono text-primary bg-primary/10 px-xs py-base rounded-md">3/4 Members</span>
+              <span className="bg-[#1e1333] text-[#8b5cf6] text-[12px] font-bold px-4 py-1.5 rounded-full border border-[#8b5cf6]/20">3/4 Members</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Member Card 1 */}
-              <div className="glass-panel rounded-lg p-sm flex items-center gap-sm transition-all cursor-pointer border border-white/5 hover:border-primary/50 relative overflow-hidden group hover:shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <img alt="Team Lead Avatar" className="w-12 h-12 rounded-full border-2 border-primary object-cover z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2-FJ5YJOgy9en3pPwDEB-zAD8neelxraY-YePQRoA0I9xKAy0zIgQ_RtN3ZMYwyVIkVpJrZvxOGXbm75OPmHT0w2tnO7aN1qfwGfcJ5fAlSaV0lczSCfmsORyt04IkW0_XSpzqLEazMLJ7xo9pAYfekmZro_ooxRGIMOfHdkZhvpIkHH_J203ApqPsUcNfq5ljjN37mN7_mumMkZIxspqyRfb3fqCbHDCgJZ8RsHudb_ItUuOse8ruzXyV53oOAtejSIhS5QFsUI"/>
-                <div className="flex-1 z-10">
-                  <h4 className="font-body-md text-body-md font-semibold text-primary-fixed-dim">Alex Rivera</h4>
-                  <p className="font-label-caps text-label-caps text-on-surface-variant">Full Stack / AI</p>
+              <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-4 flex items-center gap-4 transition-all cursor-pointer hover:border-[#8b5cf6]/40 hover:bg-white/[0.04] group">
+                <img alt="Team Lead Avatar" className="w-14 h-14 rounded-full border-2 border-[#8b5cf6] object-cover" src="https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&q=80&w=200"/>
+                <div className="flex-1">
+                  <h4 className="text-[15px] font-bold text-white">Angelo Reyes</h4>
+                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Full Stack / AI</p>
                 </div>
-                <span className="material-symbols-outlined text-primary bg-primary/10 rounded-full p-1 z-10">star</span>
+                <span className="material-symbols-outlined text-[#8b5cf6] bg-[#8b5cf6]/10 rounded-full p-1.5 text-[18px]">star</span>
               </div>
               {/* Member Card 2 */}
-              <div className="glass-panel rounded-lg p-sm flex items-center gap-sm transition-all cursor-pointer border border-white/5 hover:border-primary/50 relative overflow-hidden group hover:shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <img alt="Frontend Avatar" className="w-12 h-12 rounded-full border-2 border-surface-variant object-cover z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7IJpujrOR7L6QTx7_ZOWWOBA11BcaA9fGkD4QboEwbuLt4yuLDXANERKGeuypAlDRbfyrzowxz8K22pT8Ng6E98l583g8HHKxHms_WJ5K8yM_aJD9j1poVS5k1m45XltovUxfwLqsytC3ye_p2PX2sgb455AR70eTVHIXtKG5iVDJYVUUR01OzbGqWfTjwv_p5g6vIf_WDEaf_D8UE9SMBcQPcGiQfIT_5HoAAwyAqb8erBwQy9CsRbq-nLvWltOwhi_FTvzb7wA"/>
-                <div className="flex-1 z-10">
-                  <h4 className="font-body-md text-body-md font-semibold text-on-surface">Sarah Chen</h4>
-                  <p className="font-label-caps text-label-caps text-on-surface-variant">Frontend React</p>
+              <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-4 flex items-center gap-4 transition-all cursor-pointer hover:border-[#8b5cf6]/40 hover:bg-white/[0.04] group">
+                <img alt="Frontend Avatar" className="w-14 h-14 rounded-full border-2 border-white/10 object-cover" src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&q=80&w=200"/>
+                <div className="flex-1">
+                  <h4 className="text-[15px] font-bold text-white">Maria Santos</h4>
+                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Product Designer</p>
                 </div>
               </div>
               {/* Member Card 3 */}
-              <div className="glass-panel rounded-lg p-sm flex items-center gap-sm transition-all cursor-pointer border border-white/5 hover:border-primary/50 relative overflow-hidden group hover:shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <img alt="Backend Avatar" className="w-12 h-12 rounded-full border-2 border-surface-variant object-cover z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-BvXv3k2uVR2-amsGAkREKkkQBk8FasGzCxzUxIJuw0syvE9urUFw6dINKiOivh7JfRBinBAlzz4vs7M6U57esnY38jDvt_XEwqHDDCA2Ngz4F2wKlYdKxul5LbexEq9IYjQTQpzBDlUlqmLJT30U8uD5-srXZiFIl70vCiu_Qeyhi3hm5qJ4la3GXbmaN4mu3c2uoShPQvfizyfrEUcBki4R0nGrhusX48jaeg4MQV2ojSDrFRhOBCD6GbKFDpIpAsmWuyq3k1E"/>
-                <div className="flex-1 z-10">
-                  <h4 className="font-body-md text-body-md font-semibold text-on-surface">Marcus Thorne</h4>
-                  <p className="font-label-caps text-label-caps text-on-surface-variant">Systems Architecture</p>
+              <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-4 flex items-center gap-4 transition-all cursor-pointer hover:border-[#8b5cf6]/40 hover:bg-white/[0.04] group">
+                <img alt="Backend Avatar" className="w-14 h-14 rounded-full border-2 border-white/10 object-cover" src="https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?auto=format&fit=crop&q=80&w=200"/>
+                <div className="flex-1">
+                  <h4 className="text-[15px] font-bold text-white">Kevin Panganiban</h4>
+                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Backend Systems</p>
                 </div>
               </div>
               {/* Missing Role Indicator */}
-              <div className="glass-panel rounded-lg p-sm flex items-center gap-sm border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer group">
-                <div className="w-12 h-12 rounded-full border-2 border-dashed border-primary/50 flex items-center justify-center bg-surface">
-                  <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">add</span>
+              <div className="bg-[#1e1333]/20 border border-dashed border-[#8b5cf6]/30 rounded-2xl p-4 flex items-center gap-4 hover:bg-[#1e1333]/30 transition-all cursor-pointer group">
+                <div className="w-14 h-14 rounded-full border-2 border-dashed border-[#8b5cf6]/30 flex items-center justify-center bg-black/40">
+                  <span className="material-symbols-outlined text-[#8b5cf6] group-hover:scale-110 transition-transform">add</span>
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-body-md text-body-md font-semibold text-primary/70 group-hover:text-primary transition-colors">Missing Role</h4>
-                  <p className="font-label-caps text-label-caps text-secondary-fixed-dim">UX/UI Designer needed</p>
+                  <h4 className="text-[15px] font-bold text-[#8b5cf6]/70 group-hover:text-[#8b5cf6] transition-colors">Missing Role</h4>
+                  <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">Mobile Developer</p>
                 </div>
-                <button className="bg-primary-container text-on-primary-container text-xs px-2 py-1 rounded">Find</button>
+                <button className="bg-[#8b5cf6]/20 text-[#8b5cf6] text-[10px] font-bold px-3 py-1 rounded-lg border border-[#8b5cf6]/20">Find</button>
               </div>
             </div>
           </div>
 
           {/* Chemistry & Event Info (Spans 4 cols) */}
-          <div className="md:col-span-4 flex flex-col gap-gutter">
+          <div className="md:col-span-4 flex flex-col gap-6">
             {/* Team Chemistry Meter */}
-            <div className="glass-panel rounded-xl p-md flex flex-col items-center justify-center relative transition-all min-h-[240px] hover:shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-              <h3 className="font-label-caps text-label-caps text-on-surface-variant absolute top-md left-md">Team Chemistry</h3>
-              <div className="relative w-32 h-32 mt-sm flex items-center justify-center">
-                {/* Conic Gradient Meter */}
-                <div className="absolute inset-0 rounded-full blur-[2px]" style={{ background: 'conic-gradient(from 180deg, #d0bcff 0%, #a078ff 75%, rgba(255,255,255,0.1) 75%, rgba(255,255,255,0.1) 100%)' }}></div>
-                <div className="absolute inset-1 rounded-full bg-surface-container flex items-center justify-center flex-col z-10 border border-white/5">
-                  <span className="font-h2 text-h2 text-primary-fixed leading-none">75<span className="text-body-sm">%</span></span>
-                  <span className="font-label-caps text-label-caps text-outline text-[10px]">Synergy</span>
+            <div className="bg-[#0f0f12]/40 backdrop-blur-3xl border border-white/[0.05] rounded-[24px] p-8 flex flex-col items-center justify-center relative transition-all min-h-[260px] hover:border-[#8b5cf6]/30">
+              <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] absolute top-8 left-8">Team Chemistry</h3>
+              <div className="relative w-36 h-36 mt-4 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full blur-[2px]" style={{ background: 'conic-gradient(from 180deg, #8b5cf6 0%, #dbb8ff 75%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.05) 100%)' }}></div>
+                <div className="absolute inset-1 rounded-full bg-[#0a0a0c] flex items-center justify-center flex-col z-10 border border-white/5">
+                  <span className="text-3xl font-bold text-white leading-none">82<span className="text-sm opacity-50">%</span></span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Team Synergy</span>
                 </div>
               </div>
-              <p className="font-body-sm text-body-sm text-center text-on-surface-variant mt-md">High technical overlap. Consider adding design expertise to balance.</p>
+              <p className="text-xs font-medium text-center text-slate-500 mt-6 leading-relaxed">Solid tech stack. Need more localized design insights to reach 100%.</p>
             </div>
 
             {/* Event Details */}
-            <div className="glass-panel rounded-xl p-md flex flex-col gap-sm relative overflow-hidden group border border-primary/20 hover:shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-              <div className="absolute bottom-0 right-0 w-32 h-32 bg-secondary-container/20 rounded-full blur-[40px] -z-10 group-hover:bg-primary-container/30 transition-colors"></div>
-              <h3 className="font-h3 text-h3 text-on-surface flex items-center gap-xs">
-                <span className="material-symbols-outlined text-secondary-fixed-dim">rocket_launch</span> Global AI Hack
+            <div className="bg-[#0f0f12]/40 backdrop-blur-3xl border border-[#8b5cf6]/20 rounded-[24px] p-8 flex flex-col gap-4 relative overflow-hidden group hover:shadow-[0_0_40px_rgba(139,92,246,0.1)]">
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-[#8b5cf6]/5 rounded-full blur-[40px] -z-10"></div>
+              <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                <span className="material-symbols-outlined text-[#8b5cf6]">rocket_launch</span> Manila AI Summit
               </h3>
-              <div className="flex flex-col gap-xs mt-xs">
-                <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                  <span className="font-mono text-mono text-on-surface-variant">Status</span>
-                  <span className="font-label-caps text-label-caps text-primary bg-primary/10 px-2 py-1 rounded-full flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Registration Open</span>
+              <div className="flex flex-col gap-4 mt-2">
+                <div className="flex justify-between items-center border-b border-white/[0.03] pb-3">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Status</span>
+                  <span className="text-[10px] font-bold text-[#8b5cf6] bg-[#8b5cf6]/10 px-3 py-1 rounded-full flex items-center gap-2 border border-[#8b5cf6]/20 uppercase tracking-widest"><span className="w-1.5 h-1.5 rounded-full bg-[#8b5cf6] animate-pulse"></span> Open</span>
                 </div>
-                <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                  <span className="font-mono text-mono text-on-surface-variant">Starts In</span>
-                  <span className="font-mono text-mono text-on-surface">14d 08h 22m</span>
+                <div className="flex justify-between items-center border-b border-white/[0.03] pb-3">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Starts In</span>
+                  <span className="text-xs font-bold text-white tabular-nums tracking-widest">14d 08h 22m</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="font-mono text-mono text-on-surface-variant">Prize Pool</span>
-                  <span className="font-mono text-mono text-secondary-fixed-dim">$50,000</span>
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Prize Pool</span>
+                  <span className="text-sm font-bold text-[#8b5cf6] tabular-nums tracking-widest">₱500,000</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Shared Task List (Spans full width below) */}
-          <div className="md:col-span-12 glass-panel rounded-xl p-md flex flex-col gap-md">
-            <div className="flex justify-between items-center border-b border-white/10 pb-sm">
-              <h3 className="font-h3 text-h3 text-on-surface flex items-center gap-xs">
-                <span className="material-symbols-outlined text-primary">checklist</span> Objective Queue
+          {/* Shared Task List */}
+          <div className="md:col-span-12 bg-[#0f0f12]/40 backdrop-blur-3xl border border-white/[0.05] rounded-[24px] p-8 flex flex-col gap-6">
+            <div className="flex justify-between items-center border-b border-white/[0.03] pb-6">
+              <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                <span className="material-symbols-outlined text-[#8b5cf6]">checklist</span> Objective Queue
               </h3>
-              <button className="text-primary hover:text-primary-fixed transition-colors flex items-center gap-1 font-label-caps text-label-caps">
-                <span className="material-symbols-outlined text-[16px]">add_task</span> Add Task
+              <button className="text-[#8b5cf6] hover:text-white transition-all flex items-center gap-2 text-[12px] font-bold uppercase tracking-widest">
+                <span className="material-symbols-outlined text-[18px]">add_task</span> Add Task
               </button>
             </div>
-            <div className="flex flex-col gap-xs">
+            <div className="flex flex-col gap-2">
               {/* Task Item */}
-              <div className="flex items-center gap-sm p-sm rounded-lg hover:bg-white/5 transition-colors group">
-                <button className="w-5 h-5 rounded border border-primary/50 flex items-center justify-center text-transparent hover:bg-primary/20 transition-colors">
-                  <span className="material-symbols-outlined text-[14px]">check</span>
+              <div className="flex items-center gap-4 p-4 rounded-2xl hover:bg-white/[0.02] transition-all group">
+                <button className="w-6 h-6 rounded-lg border-2 border-[#8b5cf6]/30 flex items-center justify-center text-transparent hover:bg-[#8b5cf6]/10 transition-all">
+                  <span className="material-symbols-outlined text-[16px]">check</span>
                 </button>
                 <div className="flex-1">
-                  <p className="font-body-md text-body-md text-on-surface">Finalize API Architecture Schema</p>
+                  <p className="text-[14px] font-bold text-slate-200">Finalize Manila AI Summit PRD</p>
                 </div>
-                <div className="flex items-center gap-sm">
-                  <span className="font-label-caps text-label-caps px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant border border-outline/20">Backend</span>
-                  <img alt="Assignee" className="w-6 h-6 rounded-full opacity-70 group-hover:opacity-100 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa8ttelslUWO3mjlmuA0Eq6tJFrKB7i-ECy8itadut2eUWIJ-Kr3ZrlA3IVcNvWbl4oILHx2zSef9DOBVW8Ip8Je1xxm0eJ7FtDww5mfzOPw3XnA9YC1i_VPhFgXa2BP-isP69j1PMNmZS4t-WrCQVz_gKh2gN1yCEBBB8pULRHFZXwLqM_OLaWTFeDZTrc1UftCCImZ8VRu7mA4I0Q_TYK5I7V2Cg1aNiPmy36O_gqTwxGgv0ZaQzpiEL4O8MCfmDhjmWBkPA2RI"/>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-white/[0.03] px-3 py-1 rounded-full border border-white/[0.05]">Documentation</span>
+                  <img alt="Assignee" className="w-8 h-8 rounded-full border border-white/10 opacity-70 group-hover:opacity-100 transition-opacity" src="https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&q=80&w=100"/>
                 </div>
               </div>
               {/* Task Item */}
-              <div className="flex items-center gap-sm p-sm rounded-lg hover:bg-white/5 transition-colors group">
-                <button className="w-5 h-5 rounded border border-primary/50 flex items-center justify-center text-transparent hover:bg-primary/20 transition-colors">
-                  <span className="material-symbols-outlined text-[14px]">check</span>
+              <div className="flex items-center gap-4 p-4 rounded-2xl hover:bg-white/[0.02] transition-all group">
+                <button className="w-6 h-6 rounded-lg border-2 border-[#8b5cf6]/30 flex items-center justify-center text-transparent hover:bg-[#8b5cf6]/10 transition-all">
+                  <span className="material-symbols-outlined text-[16px]">check</span>
                 </button>
                 <div className="flex-1">
-                  <p className="font-body-md text-body-md text-on-surface">Mockup primary user flow screens</p>
+                  <p className="text-[14px] font-bold text-slate-200">Refine Taglish NLP Data Pipeline</p>
                 </div>
-                <div className="flex items-center gap-sm">
-                  <span className="font-label-caps text-label-caps px-2 py-1 rounded-full bg-error-container/20 text-error border border-error/20 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">warning</span> Unassigned</span>
-                </div>
-              </div>
-              {/* Completed Task Item */}
-              <div className="flex items-center gap-sm p-sm rounded-lg opacity-50">
-                <button className="w-5 h-5 rounded border border-primary bg-primary text-on-primary flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[14px]">check</span>
-                </button>
-                <div className="flex-1">
-                  <p className="font-body-md text-body-md text-outline line-through">Brainstorm project name and repository setup</p>
-                </div>
-                <div className="flex items-center gap-sm">
-                  <span className="font-label-caps text-label-caps px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant border border-outline/20">Admin</span>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest bg-red-400/5 px-3 py-1 rounded-full border border-red-400/20 flex items-center gap-2"><span className="material-symbols-outlined text-[14px]">warning</span> Unassigned</span>
                 </div>
               </div>
             </div>
