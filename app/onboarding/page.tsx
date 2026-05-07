@@ -40,7 +40,7 @@ export default function OnboardingPage() {
     else {
       // Merge selections with existing profile (Name, University, etc.)
       const savedProfile = localStorage.getItem('hackmatch_user_profile');
-      let finalProfile = selections;
+      let finalProfile: any = selections;
       
       if (savedProfile) {
         const existingData = JSON.parse(savedProfile);
