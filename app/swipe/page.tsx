@@ -343,9 +343,14 @@ export default function SwipePage() {
   const handleSwipe = (dir: 'left' | 'right') => {
     setDirection(dir);
     setTimeout(() => {
-      setCurrentIndex((prev) => prev + 1);
-      setDirection(null);
-    }, 200);
+      if (dir === 'right') {
+        // Successful match! Redirect to messages
+        router.push(`/messages?user=${encodeURIComponent(currentProfile.name)}`);
+      } else {
+        setCurrentIndex(prev => prev + 1);
+        setDirection(null);
+      }
+    }, 400);
   };
 
   const handleMatch = () => {

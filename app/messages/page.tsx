@@ -98,7 +98,47 @@ function MessagesContent() {
   const [activeChatId, setActiveChatId] = useState<string>(INITIAL_CHATS[0].id);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [newGroupDesc, setNewGroupDesc] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const handleCreateGroup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newGroupName.trim()) return;
+
+    const newGroup: Chat = {
+      id: `group-${newGroupName.toLowerCase().replace(/\s+/g, '-')}`,
+      name: newGroupName,
+      type: 'channel',
+      description: newGroupDesc || 'New squad for epic builds.',
+      messages: []
+    };
+
+    // Save locally
+    setChats([newGroup, ...chats]);
+    setActiveChatId(newGroup.id);
+    setIsCreateGroupOpen(false);
+    setNewGroupName('');
+    setNewGroupDesc('');
+
+    // Sync to Redis global groups list
+    try {
+      await fetch('/api/user/profile', { // Using same sync endpoint to store group metadata
+        method: 'POST',
+        body: JSON.stringify({ email: `group:${newGroup.id}`, profile: newGroup }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      // Also add to swipable or a new global_groups list if needed
+      await fetch('/api/messages/send', {
+        method: 'POST',
+        body: JSON.stringify({ chatId: newGroup.id, message: { id: Date.now(), sender: 'System', avatar: '', time: 'Now', content: 'Group created! Start building. 🚀', isMe: false } }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } catch (e) {
+      console.error('Failed to sync group to cloud');
+    }
+  };
 
   // Initialize Pusher for Live Chat
   useEffect(() => {
@@ -274,8 +314,12 @@ function MessagesContent() {
           <div className="p-md border-b border-white/[0.05]">
             <div className="flex items-center justify-between mb-md">
               <h2 className="text-xl font-bold text-white tracking-tight">Messages</h2>
-              <button className="text-primary hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined">edit_square</span>
+              <button 
+                onClick={() => setIsCreateGroupOpen(true)}
+                className="text-primary hover:scale-110 transition-transform flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined">add_circle</span>
+                <span className="text-[12px] font-bold">Group</span>
               </button>
             </div>
             <div className="relative group">
@@ -431,6 +475,67 @@ function MessagesContent() {
           </footer>
         </main>
       </div>
+
+      <AnimatePresence>
+        {isCreateGroupOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCreateGroupOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-[#0f0f12] border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
+            >
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 rounded-full blur-[80px]"></div>
+              
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-2xl font-bold text-white">Create New Group</h3>
+                  <button onClick={() => setIsCreateGroupOpen(false)} className="text-slate-500 hover:text-white transition-colors">
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+
+                <form onSubmit={handleCreateGroup} className="space-y-6">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Group Name</label>
+                    <input 
+                      type="text" 
+                      value={newGroupName}
+                      onChange={(e) => setNewGroupName(e.target.value)}
+                      placeholder="e.g. Team Bayanihan"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary/50 outline-none transition-all"
+                      autoFocus
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Description</label>
+                    <textarea 
+                      value={newGroupDesc}
+                      onChange={(e) => setNewGroupDesc(e.target.value)}
+                      placeholder="What is this group for?"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary/50 outline-none transition-all min-h-[100px]"
+                    />
+                  </div>
+                  <button 
+                    type="submit"
+                    className="w-full py-4 rounded-xl bg-primary text-on-primary font-bold hover:brightness-110 shadow-lg transition-all flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined">groups</span>
+                    Create Group
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </AppLayout>
   );
 }
