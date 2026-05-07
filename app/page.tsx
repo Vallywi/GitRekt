@@ -42,18 +42,26 @@ export default function WelcomePage() {
           setIsLoading(false);
         }
       } else {
-        // SIGN UP LOGIC: Register the user
-        // Save initial profile data to localStorage
-        localStorage.setItem('hackmatch_user_profile', JSON.stringify({
+        const newProfile = {
           name: fullName,
           university: university,
           course: course,
           email: email,
           interests: [],
           skills: [],
-          role: ''
-        }));
+          role: '',
+          isFirstTime: true
+        };
         
+        localStorage.setItem('hackmatch_user_profile', JSON.stringify(newProfile));
+        
+        // Sync to cloud immediately so friends can search for them
+        fetch('/api/user/profile', {
+          method: 'POST',
+          body: JSON.stringify({ email: email, profile: newProfile }),
+          headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error('Sign-up cloud sync failed:', err));
+
         MOCK_REGISTERED_USERS.push(email.toLowerCase());
         router.push('/onboarding');
       }

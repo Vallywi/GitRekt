@@ -95,6 +95,8 @@ function MessagesContent() {
   const targetUser = searchParams.get('user');
   
   const [chats, setChats] = useState<Chat[]>(INITIAL_CHATS);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [activeChatId, setActiveChatId] = useState<string>(INITIAL_CHATS[0].id);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -102,6 +104,42 @@ function MessagesContent() {
   const [newGroupName, setNewGroupName] = useState('');
   const [newGroupDesc, setNewGroupDesc] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Fetch all registered users to enable searching for friends
+  useEffect(() => {
+    fetch('/api/user/swipable')
+      .then(res => res.json())
+      .then(users => {
+        if (Array.isArray(users)) {
+          setAllUsers(users);
+        }
+      })
+      .catch(err => console.error('Failed to load global users:', err));
+  }, []);
+
+  const handleStartChat = (user: any) => {
+    const chatId = `dm-${user.name.toLowerCase().replace(/\s+/g, '-')}`;
+    
+    // Check if chat already exists
+    const existing = chats.find(c => c.id === chatId);
+    if (existing) {
+      setActiveChatId(chatId);
+      return;
+    }
+
+    const newChat: Chat = {
+      id: chatId,
+      name: user.name,
+      type: 'dm',
+      avatar: user.image || '',
+      status: 'online',
+      messages: []
+    };
+
+    setChats([newChat, ...chats]);
+    setActiveChatId(chatId);
+    setSearchQuery('');
+  };
 
   const handleCreateGroup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -326,12 +364,53 @@ function MessagesContent() {
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[18px]">search</span>
               <input 
                 type="text" 
-                placeholder="Search conversations..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search friends or groups..." 
                 className="w-full bg-white/[0.03] border border-white/[0.05] rounded-xl py-2.5 pl-10 pr-4 text-body-sm text-white focus:outline-none focus:border-primary/50 transition-all"
               />
             </div>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar">
+            {/* Search Results */}
+            {searchQuery && (
+              <div className="p-md animate-in fade-in slide-in-from-top-1 duration-300">
+                <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-primary"></span>
+                  People Found
+                </h3>
+                <div className="space-y-2">
+                  {allUsers
+                    .filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map(user => (
+                      <button
+                        key={user.email}
+                        onClick={() => handleStartChat(user)}
+                        className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-white/[0.05] transition-all group border border-transparent hover:border-white/[0.05]"
+                      >
+                        <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 flex-shrink-0 bg-surface flex items-center justify-center">
+                          {user.image ? (
+                            <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary text-[14px] font-bold uppercase">
+                              {user.name.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 text-left overflow-hidden">
+                          <p className="text-[13px] font-bold text-white truncate group-hover:text-primary transition-colors">{user.name}</p>
+                          <p className="text-[10px] text-slate-500 truncate uppercase tracking-tighter">{user.school || user.university || 'Hacker'}</p>
+                        </div>
+                        <span className="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-all text-[18px]">chat</span>
+                      </button>
+                    ))}
+                  {allUsers.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                    <p className="text-[11px] text-slate-600 text-center py-4 italic">No hackers found.</p>
+                  )}
+                </div>
+                <div className="h-px bg-white/[0.05] my-6"></div>
+              </div>
+            )}
             {chats.map(chat => (
               <button
                 key={chat.id}

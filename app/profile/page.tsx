@@ -35,11 +35,11 @@ export default function ProfilePage() {
       setProfile(prev => ({
         ...prev,
         name: data.name || prev.name,
-        school: data.university || prev.school,
+        school: data.university || data.school || prev.school,
         role: data.role || prev.role,
         skills: (data.skills && data.skills.length > 0) ? data.skills : prev.skills,
         vibe: data.vibe || prev.vibe,
-        bio: data.isFirstTime ? `First-time hacker ready to learn and build! Interested in ${data.interests?.join(', ') || 'tech'}. Preferred vibe: ${data.vibe || 'Collaborative'}.` : prev.bio
+        bio: data.isFirstTime ? `First-time hacker from ${data.university || 'university'} ready to learn and build! Interested in ${data.interests?.join(', ') || 'tech'}. Preferred vibe: ${data.vibe || 'Collaborative'}.` : (data.bio || prev.bio)
       }));
 
       // Cloud Sync Check

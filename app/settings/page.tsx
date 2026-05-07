@@ -7,10 +7,12 @@ import { useRouter } from 'next/navigation';
 export default function SettingsPage() {
   const router = useRouter();
   const [profile, setProfile] = useState({
-    name: 'Alex Vance',
-    role: 'Senior Backend Engineer @ Neura',
-    bio: 'Specializing in distributed systems and high-frequency trading infrastructure. Looking for ambitious co-founders.',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=300'
+    name: '',
+    role: '',
+    bio: '',
+    image: '',
+    university: '',
+    course: ''
   });
 
   const [activeTab, setActiveTab] = useState('profile');
@@ -21,11 +23,15 @@ export default function SettingsPage() {
     const saved = localStorage.getItem('hackmatch_user_profile');
     if (saved) {
       const data = JSON.parse(saved);
+      const initialBio = data.isFirstTime ? `First-time hacker from ${data.university || 'university'} ready to learn and build!` : (data.bio || '');
+      
       setProfile({
-        name: data.name || profile.name,
-        role: data.role || profile.role,
-        bio: data.bio || profile.bio,
-        image: data.image || profile.image
+        name: data.name || '',
+        role: data.role || 'New Hacker',
+        bio: initialBio,
+        image: data.image || '',
+        university: data.university || '',
+        course: data.course || ''
       });
     }
   }, []);
