@@ -322,14 +322,14 @@ export default function SwipePage() {
         if (Array.isArray(realUsers) && realUsers.length > 0) {
           // Map real users to the MOCK_PROFILE format
           const mappedRealUsers = realUsers.map((u: any, idx: number) => ({
-            id: `real-${idx}`,
-            name: u.name,
-            role: u.role || 'Elite Developer',
-            bio: u.bio || 'Building something epic.',
+            id: Date.now() + idx,
+            name: u.name || 'Elite Hacker',
+            age: 20, // Default age for students
+            role: u.role || 'Full-Stack Developer',
+            bio: u.bio || 'Building the future of PH tech.',
             image: u.image || `https://images.unsplash.com/photo-${1539571696357 + idx}-5a69c17a67c6?auto=format&fit=crop&q=80&w=400`,
-            skills: u.skills || ['React', 'Engineering'],
+            skills: (u.skills && u.skills.length > 0) ? u.skills : ['React', 'Next.js'],
             school: u.university || u.school || 'UP Diliman',
-            matches: 95
           }));
           
           setProfiles(prev => [...mappedRealUsers, ...prev]);
