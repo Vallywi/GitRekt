@@ -1,4 +1,5 @@
 import Pusher from 'pusher';
+import { Redis } from '@upstash/redis';
 import { NextResponse } from 'next/server';
 
 const pusher = new Pusher({
@@ -7,6 +8,11 @@ const pusher = new Pusher({
   secret: process.env.PUSHER_SECRET || '',
   cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER || '',
   useTLS: true,
+});
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || '',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
 });
 
 export async function POST(request: Request) {
