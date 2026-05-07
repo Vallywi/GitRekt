@@ -314,42 +314,80 @@ export default function SwipePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
 
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  // Fetch current user from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('hackmatch_user_profile');
+    if (stored) {
+      setCurrentUser(JSON.parse(stored));
+    }
+  }, []);
+
   // Fetch real users from database and add to swipe pool
   useEffect(() => {
-    fetch('/api/user/swipable')
+    const email = currentUser?.email;
+    const url = email ? `/api/user/swipable?email=${email}` : '/api/user/swipable';
+    
+    fetch(url)
       .then(res => res.json())
       .then(realUsers => {
         if (Array.isArray(realUsers) && realUsers.length > 0) {
-          // Map real users to the MOCK_PROFILE format
-          const mappedRealUsers = realUsers.map((u: any, idx: number) => ({
-            id: Date.now() + idx,
-            name: u.name || 'Elite Hacker',
-            age: 20, // Default age for students
-            role: u.role || 'Full-Stack Developer',
-            bio: u.bio || 'Building the future of PH tech.',
-            image: u.image || `https://images.unsplash.com/photo-${1539571696357 + idx}-5a69c17a67c6?auto=format&fit=crop&q=80&w=400`,
-            skills: (u.skills && u.skills.length > 0) ? u.skills : ['React', 'Next.js'],
-            school: u.university || u.school || 'UP Diliman',
-          }));
-          
-          setProfiles(prev => [...mappedRealUsers, ...prev]);
+          setProfiles(prev => {
+            const existingIds = new Set(prev.map(p => p.id));
+            const newUsers = realUsers
+              .filter((u: any) => !existingIds.has(u.id))
+              .map((u: any, idx: number) => ({
+                id: u.id,
+                name: u.name || 'Elite Hacker',
+                age: 22, // Default age
+                role: u.role || 'Full-Stack Developer',
+                bio: u.bio || 'Building the future of PH tech.',
+                image: u.image || `https://images.unsplash.com/photo-${1539571696357 + idx}-5a69c17a67c6?auto=format&fit=crop&q=80&w=400`,
+                skills: (u.skills && u.skills.length > 0) ? u.skills : ['React', 'Next.js'],
+                school: u.university || u.school || 'UP Diliman',
+                isReal: true
+              }));
+            
+            return [...newUsers, ...prev];
+          });
         }
       })
       .catch(err => console.error('Failed to load real users:', err));
-  }, []);
+  }, [currentUser]);
 
   const currentProfile = profiles[currentIndex % profiles.length];
 
-  const handleSwipe = (dir: 'left' | 'right') => {
+  const handleSwipe = async (dir: 'left' | 'right') => {
     setDirection(dir);
-    setTimeout(() => {
-      if (dir === 'right') {
-        // Successful match! Redirect to messages
-        router.push(`/messages?user=${encodeURIComponent(currentProfile.name)}`);
-      } else {
-        setCurrentIndex(prev => prev + 1);
-        setDirection(null);
+    
+    // Call Swipe API if we have a current user and target
+    if (currentUser?.email && currentProfile.isReal) {
+      try {
+        const res = await fetch('/api/swipe', {
+          method: 'POST',
+          body: JSON.stringify({
+            actorEmail: currentUser.email,
+            targetUserId: currentProfile.id,
+            direction: dir === 'right' ? 'LIKE' : 'PASS',
+            targetType: 'USER'
+          }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        
+        if (data.isMatch) {
+          handleMatch();
+          return;
+        }
+      } catch (err) {
+        console.error('Swipe API failed:', err);
       }
+    }
+
+    setTimeout(() => {
+      setCurrentIndex(prev => prev + 1);
+      setDirection(null);
     }, 400);
   };
 
@@ -363,13 +401,13 @@ export default function SwipePage() {
       if (e.key === 'ArrowLeft') {
         handleSwipe('left');
       } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
-        handleMatch();
+        handleSwipe('right');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex]);
+  }, [currentIndex, currentProfile, currentUser]);
 
   return (
     <AppLayout>
@@ -452,13 +490,13 @@ export default function SwipePage() {
               <span className="material-symbols-outlined text-[32px] group-active:scale-90 transition-transform">close</span>
             </button>
             <button 
-              onClick={handleMatch}
+              onClick={() => handleSwipe('right')}
               className="w-14 h-14 rounded-full glass-panel flex items-center justify-center text-[#c4c1fb] hover:text-primary-container hover:border-primary-container/50 hover:bg-primary-container/10 transition-all duration-300 shadow-xl bg-surface/80 group -mt-4"
             >
               <span className="material-symbols-outlined text-[28px] group-active:scale-90 transition-transform">star</span>
             </button>
             <button 
-              onClick={handleMatch}
+              onClick={() => handleSwipe('right')}
               className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-container to-[#6d3bd7] flex items-center justify-center text-white shadow-[0_4px_20px_rgba(139,92,246,0.4)] hover:shadow-[0_4px_30px_rgba(139,92,246,0.6)] hover:brightness-110 transition-all duration-300 group"
             >
               <span className="material-symbols-outlined text-[32px] group-active:scale-90 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>

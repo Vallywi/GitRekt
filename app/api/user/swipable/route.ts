@@ -1,23 +1,50 @@
-import { Redis } from '@upstash/redis';
+import prisma from "@/lib/prisma";
 import { NextResponse } from 'next/server';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || '',
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
-});
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const email = searchParams.get('email');
 
-export async function GET() {
   try {
-    const emails = await redis.smembers('global_swipable_users');
-    const profiles = [];
-
-    for (const email of emails) {
-      const profile = await redis.get(`user_profile:${email}`);
-      if (profile) profiles.push(profile);
+    // If no email provided, just return all users (fallback for MVP)
+    if (!email) {
+      const allUsers = await prisma.user.findMany({
+        take: 20
+      });
+      return NextResponse.json(allUsers);
     }
 
-    return NextResponse.json(profiles);
+    const currentUser = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      include: { swipes: true }
+    });
+
+    if (!currentUser) {
+      const allUsers = await prisma.user.findMany({
+        take: 20
+      });
+      return NextResponse.json(allUsers);
+    }
+
+    // Get IDs of users already swiped on
+    const swipedUserIds = currentUser.swipes
+      .filter(s => s.targetUserId)
+      .map(s => s.targetUserId as string);
+
+    // Fetch users not in the swiped list and not the current user
+    const swipableUsers = await prisma.user.findMany({
+      where: {
+        AND: [
+          { id: { not: currentUser.id } },
+          { id: { notIn: swipedUserIds } }
+        ]
+      },
+      take: 20
+    });
+
+    return NextResponse.json(swipableUsers);
   } catch (error) {
+    console.error('Fetch swipable users error:', error);
     return NextResponse.json({ error: 'Failed to fetch swipable users' }, { status: 500 });
   }
 }

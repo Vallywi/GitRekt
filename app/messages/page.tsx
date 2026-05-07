@@ -4,21 +4,21 @@ import AppLayout from '../../components/AppLayout';
 import { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import Pusher from 'pusher-js';
+import { supabase } from '@/lib/supabase';
 
 type Message = {
-  id: number;
-  sender: string;
-  avatar: string;
-  time: string;
-  content: string;
-  isMe: boolean;
-  status?: 'sending' | 'sent' | 'seen';
-  file?: {
+  id: string;
+  senderId: string;
+  sender: {
     name: string;
-    size: string;
-    type: string;
+    image?: string;
   };
+  content: string;
+  createdAt: string;
+  isMe?: boolean;
+  status?: 'sending' | 'sent' | 'seen';
+  avatar?: string; // For backward compatibility with existing UI
+  time?: string;   // For backward compatibility with existing UI
 };
 
 type Chat = {
@@ -41,53 +41,7 @@ const INITIAL_CHATS: Chat[] = [
     type: 'channel',
     description: 'Main squad coordination for Manila AI Summit',
     unreadCount: 3,
-    messages: [
-      {
-        id: 1,
-        sender: 'Maria Santos',
-        avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=100',
-        time: '10:42 AM',
-        content: "I've updated the Figma file with the new Taglish NLP landing page. Check the typography!",
-        isMe: false,
-        file: { name: 'HackMatch_Design_v3.fig', size: '5.2 MB', type: 'Figma Design' }
-      },
-      {
-        id: 2,
-        sender: 'You',
-        avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100',
-        time: '10:45 AM',
-        content: "Solid design, Maria! The Inter font really works for the professional look. I'll start coding the hero section.",
-        isMe: true,
-        status: 'seen'
-      }
-    ]
-  },
-  {
-    id: 'joshua-gomez',
-    name: 'Joshua Gomez',
-    type: 'dm',
-    status: 'online',
-    lastMessage: 'Uy, are you going to the hackathon?',
-    lastTime: '2m',
-    messages: [
-      {
-        id: 1,
-        sender: 'Joshua Gomez',
-        avatar: 'https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?auto=format&fit=crop&q=80&w=100',
-        time: '11:05 AM',
-        content: "Pre, have you seen the new prize pool for Manila AI Summit? 500k!",
-        isMe: false
-      },
-      {
-        id: 2,
-        sender: 'You',
-        avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100',
-        time: '11:06 AM',
-        content: "Oo nga eh, competitive. Need natin ayusin yung pitch natin.",
-        isMe: true,
-        status: 'seen'
-      }
-    ]
+    messages: []
   }
 ];
 
@@ -104,9 +58,18 @@ function MessagesContent() {
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [newGroupDesc, setNewGroupDesc] = useState('');
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Fetch all registered users to enable searching for friends
+  // Fetch current user from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('hackmatch_user_profile');
+    if (stored) {
+      setCurrentUser(JSON.parse(stored));
+    }
+  }, []);
+
+  // Fetch all registered users
   useEffect(() => {
     fetch('/api/user/swipable')
       .then(res => res.json())
@@ -161,17 +124,11 @@ function MessagesContent() {
     setNewGroupName('');
     setNewGroupDesc('');
 
-    // Sync to Redis global groups list
+    // Sync to Supabase
     try {
-      await fetch('/api/user/profile', { // Using same sync endpoint to store group metadata
+      await fetch('/api/user/profile', {
         method: 'POST',
-        body: JSON.stringify({ email: `group:${newGroup.id}`, profile: newGroup }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      // Also add to swipable or a new global_groups list if needed
-      await fetch('/api/messages/send', {
-        method: 'POST',
-        body: JSON.stringify({ chatId: newGroup.id, message: { id: Date.now(), sender: 'System', avatar: '', time: 'Now', content: 'Group created! Start building. 🚀', isMe: false } }),
+        body: JSON.stringify({ email: `group:${newGroup.id}`, ...newGroup }),
         headers: { 'Content-Type': 'application/json' }
       });
     } catch (e) {
@@ -179,27 +136,72 @@ function MessagesContent() {
     }
   };
 
-  // Initialize Pusher for Live Chat
-  useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY || '', {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER || 'ap1',
-    });
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
-    const channel = pusher.subscribe(`chat-${activeChatId}`);
+  // Initialize Supabase Realtime for Live Chat, Presence, and Typing
+  useEffect(() => {
+    if (!activeChatId || !currentUser) return;
+
+    const channel = supabase.channel(`chat:${activeChatId}`, {
+      config: {
+        presence: {
+          key: currentUser.id,
+        },
+      },
+    })
+      .on('broadcast', { event: 'new-message' }, ({ payload }) => {
+        const newMessage = payload as Message;
+        if (newMessage.senderId !== currentUser?.id) {
+          setChats(prevChats => prevChats.map(chat => {
+            if (chat.id === activeChatId) {
+              return {
+                ...chat,
+                messages: [...chat.messages, { ...newMessage, isMe: false, avatar: newMessage.sender.image, time: new Date(newMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]
+              };
+            }
+            return chat;
+          }));
+        }
+      })
+      .on('broadcast', { event: 'typing' }, ({ payload }) => {
+        if (payload.userId !== currentUser.id) {
+          setIsTyping(payload.isTyping);
+          // Auto-clear typing after 3 seconds
+          if (payload.isTyping) {
+            setTimeout(() => setIsTyping(false), 3000);
+          }
+        }
+      })
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const activeIds = Object.keys(state);
+        setOnlineUsers(activeIds);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            userId: currentUser.id,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
     
-    // Fetch History from Redis
+    // Fetch History from Prisma
     fetch(`/api/messages/history?chatId=${activeChatId}`)
       .then(res => res.json())
       .then(history => {
-        if (Array.isArray(history) && history.length > 0) {
+        if (Array.isArray(history)) {
           setChats(prevChats => prevChats.map(chat => {
             if (chat.id === activeChatId) {
-              // Deduplicate and merge history
-              const existingIds = new Set(chat.messages.map(m => m.id));
-              const newHistory = history.filter(m => !existingIds.has(m.id));
+              const mappedHistory = history.map(m => ({
+                ...m,
+                isMe: m.senderId === currentUser?.id,
+                avatar: m.sender.image,
+                time: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              }));
               return {
                 ...chat,
-                messages: [...chat.messages, ...newHistory]
+                messages: mappedHistory
               };
             }
             return chat;
@@ -208,26 +210,22 @@ function MessagesContent() {
       })
       .catch(err => console.error('Failed to load chat history:', err));
 
-    channel.bind('new-message', (newMessage: Message) => {
-      // Avoid adding our own message twice if we already added it locally
-      if (!newMessage.isMe) {
-        setChats(prevChats => prevChats.map(chat => {
-          if (chat.id === activeChatId) {
-            return {
-              ...chat,
-              messages: [...chat.messages, { ...newMessage, isMe: false }]
-            };
-          }
-          return chat;
-        }));
-      }
-    });
-
     return () => {
-      pusher.unsubscribe(`chat-${activeChatId}`);
-      pusher.disconnect();
+      supabase.removeChannel(channel);
     };
-  }, [activeChatId]);
+  }, [activeChatId, currentUser]);
+
+  // Handle Typing Indicator
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    if (activeChatId && currentUser) {
+      supabase.channel(`chat:${activeChatId}`).send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: { userId: currentUser.id, isTyping: e.target.value.length > 0 }
+      });
+    }
+  };
 
   // Auto-Select or Create Chat
   useEffect(() => {
@@ -241,16 +239,7 @@ function MessagesContent() {
           name: targetUser,
           type: 'dm',
           status: 'online',
-          messages: [
-            {
-              id: Date.now(),
-              sender: targetUser,
-              avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100',
-              time: 'Just now',
-              content: `Hi! I saw we matched for the AgriTech PH Challenge. Excited to work with you!`,
-              isMe: false
-            }
-          ]
+          messages: []
         };
         setChats([newChat, ...chats]);
         setActiveChatId(newChat.id);
@@ -260,86 +249,52 @@ function MessagesContent() {
 
   const activeChat = chats.find(c => c.id === activeChatId) || chats[0];
 
-  // Live Auto-Reply Simulation
-  useEffect(() => {
-    const lastMessage = activeChat.messages[activeChat.messages.length - 1];
-    
-    if (lastMessage && lastMessage.isMe && lastMessage.sender === 'You') {
-      // Simulate "Seen" after 1 second
-      setTimeout(() => {
-        setChats(prev => prev.map(chat => {
-          if (chat.id === activeChatId) {
-            const updatedMessages = [...chat.messages];
-            updatedMessages[updatedMessages.length - 1] = { ...lastMessage, status: 'seen' };
-            return { ...chat, messages: updatedMessages };
-          }
-          return chat;
-        }));
-      }, 1000);
-
-      // Simulate "Typing..." after 2 seconds
-      setTimeout(() => {
-        setIsTyping(true);
-        
-        // Simulate "Reply" after 4 seconds
-        setTimeout(() => {
-          setIsTyping(false);
-          const replyMessage: Message = {
-            id: Date.now(),
-            sender: activeChat.name,
-            avatar: activeChat.type === 'dm' ? activeChat.messages[0].avatar : 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=100',
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            content: "Solid lodi! G ako dyan. Let's build it! 🚀",
-            isMe: false
-          };
-          
-          setChats(prev => prev.map(chat => 
-            chat.id === activeChatId 
-              ? { ...chat, messages: [...chat.messages, replyMessage] }
-              : chat
-          ));
-        }, 2000);
-      }, 2000);
-    }
-  }, [activeChat.messages.length, activeChatId]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [activeChat.messages, isTyping]);
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || !currentUser) return;
 
-    const newMessage: Message = {
-      id: Date.now(),
-      sender: 'You',
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      content: inputValue,
-      isMe: true,
-      status: 'sent'
-    };
-
-    // 1. Update UI locally
-    setChats(chats.map(chat => 
-      chat.id === activeChatId 
-        ? { ...chat, messages: [...chat.messages, newMessage] }
-        : chat
-    ));
+    const tempId = Date.now().toString();
+    const newMessageContent = inputValue;
     setInputValue('');
 
-    // 2. Trigger Pusher for the other user
+    const optimisticMessage: any = {
+      id: tempId,
+      senderId: currentUser.id,
+      sender: { name: 'You', image: currentUser.image },
+      content: newMessageContent,
+      createdAt: new Date().toISOString(),
+      isMe: true,
+      status: 'sending',
+      avatar: currentUser.image,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setChats(chats.map(chat => 
+      chat.id === activeChatId 
+        ? { ...chat, messages: [...chat.messages, optimisticMessage] }
+        : chat
+    ));
+
     try {
-      await fetch('/api/messages/send', {
+      const res = await fetch('/api/messages/send', {
         method: 'POST',
-        body: JSON.stringify({ chatId: activeChatId, message: newMessage }),
+        body: JSON.stringify({ 
+          chatId: activeChatId, 
+          content: newMessageContent,
+          senderId: currentUser.id
+        }),
         headers: { 'Content-Type': 'application/json' }
       });
+      const savedMessage = await res.json();
+      
+      setChats(prev => prev.map(chat => 
+        chat.id === activeChatId 
+          ? { 
+              ...chat, 
+              messages: chat.messages.map(m => m.id === tempId ? { ...savedMessage, isMe: true, status: 'sent', avatar: currentUser.image, time: optimisticMessage.time } : m) 
+            }
+          : chat
+      ));
     } catch (e) {
       console.error('Failed to send live message');
     }
@@ -419,8 +374,8 @@ function MessagesContent() {
                 className={`w-full p-md flex items-center gap-4 transition-all border-b border-white/[0.02] hover:bg-white/[0.02] ${activeChatId === chat.id ? 'bg-primary/10 border-l-4 border-l-primary' : ''}`}
               >
                 <div className="relative">
-                  <img alt={chat.name} className="w-12 h-12 rounded-full object-cover border border-white/10" src={chat.type === 'dm' ? chat.messages[0].avatar : 'https://images.unsplash.com/photo-1522071823991-b9671f9d7f1f?auto=format&fit=crop&q=80&w=100'} />
-                  {chat.status === 'online' && (
+                  <img alt={chat.name} className="w-12 h-12 rounded-full object-cover border border-white/10" src={chat.type === 'dm' ? (chat.messages[0]?.avatar || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100') : 'https://images.unsplash.com/photo-1522071823991-b9671f9d7f1f?auto=format&fit=crop&q=80&w=100'} />
+                  {onlineUsers.includes(chat.id.replace('dm-', '')) && (
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#10b981] rounded-full border-2 border-[#0a0a0c]"></div>
                   )}
                 </div>
@@ -431,7 +386,7 @@ function MessagesContent() {
                     </span>
                     <span className="text-[10px] text-slate-500 uppercase font-bold">{chat.lastTime || '10:45 AM'}</span>
                   </div>
-                  <p className="text-[13px] text-slate-500 line-clamp-1 opacity-80">{chat.lastMessage || chat.messages[chat.messages.length - 1].content}</p>
+                  <p className="text-[13px] text-slate-500 line-clamp-1 opacity-80">{chat.lastMessage || chat.messages[chat.messages.length - 1]?.content || 'Started a new chat'}</p>
                 </div>
                 {chat.unreadCount && (
                   <div className="bg-primary text-on-primary text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-lg">{chat.unreadCount}</div>
@@ -452,8 +407,8 @@ function MessagesContent() {
                 </button>
               </div>
               <div className="relative">
-                <img alt={activeChat.name} className="w-10 h-10 rounded-full object-cover border border-white/10" src={activeChat.type === 'dm' ? activeChat.messages[0].avatar : 'https://images.unsplash.com/photo-1522071823991-b9671f9d7f1f?auto=format&fit=crop&q=80&w=100'} />
-                {activeChat.status === 'online' && (
+                <img alt={activeChat.name} className="w-10 h-10 rounded-full object-cover border border-white/10" src={activeChat.type === 'dm' ? (activeChat.messages[0]?.avatar || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100') : 'https://images.unsplash.com/photo-1522071823991-b9671f9d7f1f?auto=format&fit=crop&q=80&w=100'} />
+                {onlineUsers.includes(activeChat.id.replace('dm-', '')) && (
                   <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#10b981] rounded-full border-2 border-[#0a0a0c]"></div>
                 )}
               </div>
@@ -462,7 +417,7 @@ function MessagesContent() {
                   {activeChat.type === 'channel' ? `#${activeChat.name}` : activeChat.name}
                   {isTyping && <span className="text-[10px] text-primary italic lowercase tracking-tight animate-pulse ml-2">Typing...</span>}
                 </h3>
-                <p className="text-[11px] text-slate-500 font-medium uppercase tracking-widest">{activeChat.type === 'channel' ? activeChat.description : (activeChat.status === 'online' ? 'Online' : 'Offline')}</p>
+                <p className="text-[11px] text-slate-500 font-medium uppercase tracking-widest">{activeChat.type === 'channel' ? activeChat.description : (onlineUsers.includes(activeChat.id.replace('dm-', '')) ? 'Online' : 'Offline')}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 text-slate-400">
@@ -477,7 +432,7 @@ function MessagesContent() {
             {activeChat.messages.map((msg, index) => (
               <div key={msg.id} className={`flex flex-col ${msg.isMe ? 'items-end' : 'items-start'}`}>
                 <div className={`flex gap-3 max-w-[80%] ${msg.isMe ? 'flex-row-reverse' : ''}`}>
-                  {!msg.isMe && <img alt={msg.sender} className="w-8 h-8 rounded-full object-cover mt-1 flex-shrink-0" src={msg.avatar} />}
+                  {!msg.isMe && <img alt={msg.sender?.name || 'User'} className="w-8 h-8 rounded-full object-cover mt-1 flex-shrink-0" src={msg.avatar || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=100'} />}
                   <div className="flex flex-col gap-1">
                     <div className={`px-4 py-2.5 rounded-2xl text-[14px] leading-relaxed ${msg.isMe ? 'bg-primary text-on-primary rounded-tr-none shadow-lg' : 'bg-white/[0.03] border border-white/[0.05] text-white rounded-tl-none'}`}>
                       {msg.content}
@@ -488,18 +443,6 @@ function MessagesContent() {
                         <span className="material-symbols-outlined text-[10px] text-primary" style={{ fontVariationSettings: msg.status === 'seen' ? "'FILL' 1" : "'FILL' 0" }}>
                           {msg.status === 'seen' ? 'check_circle' : 'check'}
                         </span>
-                      </div>
-                    )}
-                    {msg.file && (
-                      <div className="bg-white/[0.02] border border-white/[0.05] p-3 rounded-xl mt-2 flex items-center gap-3 group cursor-pointer hover:bg-white/[0.04] transition-all">
-                        <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-                          <span className="material-symbols-outlined text-[20px]">description</span>
-                        </div>
-                        <div className="flex-1 overflow-hidden">
-                          <p className="text-[12px] font-bold text-white truncate">{msg.file.name}</p>
-                          <p className="text-[10px] text-slate-500 uppercase tracking-widest">{msg.file.size} • {msg.file.type}</p>
-                        </div>
-                        <span className="material-symbols-outlined text-slate-500 group-hover:text-primary transition-colors">download</span>
                       </div>
                     )}
                     <span className="text-[10px] text-slate-600 font-bold uppercase tracking-tighter mt-1 px-1">
@@ -538,7 +481,7 @@ function MessagesContent() {
               <input 
                 type="text" 
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={handleInputChange}
                 placeholder={`Message ${activeChat.type === 'channel' ? '#' + activeChat.name : activeChat.name}...`} 
                 className="flex-1 bg-transparent border-none focus:outline-none text-white text-body-sm py-2 px-2"
               />

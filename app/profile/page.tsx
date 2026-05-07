@@ -55,8 +55,29 @@ export default function ProfilePage() {
 
   const [newSkill, setNewSkill] = useState('');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsEditing(false);
+    
+    // Save to localStorage
+    const savedProfile = localStorage.getItem('hackmatch_user_profile');
+    if (savedProfile) {
+      const data = JSON.parse(savedProfile);
+      const updatedProfile = { ...data, ...profile };
+      localStorage.setItem('hackmatch_user_profile', JSON.stringify(updatedProfile));
+
+      // Sync to cloud
+      if (updatedProfile.email) {
+        try {
+          await fetch('/api/user/profile', {
+            method: 'POST',
+            body: JSON.stringify(updatedProfile),
+            headers: { 'Content-Type': 'application/json' }
+          });
+        } catch (e) {
+          console.error('Profile cloud sync failed');
+        }
+      }
+    }
   };
 
   const addSkill = (e: React.FormEvent) => {
@@ -116,59 +137,56 @@ export default function ProfilePage() {
             />
           </div>
 
-          <div className="flex-1 z-10 w-full">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-              <div className="w-full max-w-xl">
-                {isEditing ? (
-                  <div className="space-y-3">
-                    <input 
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-h2 font-bold text-white focus:border-primary/50 outline-none"
-                      value={profile.name}
-                      onChange={(e) => setProfile({...profile, name: e.target.value})}
-                      placeholder="Full Name"
-                    />
-                    <input 
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-h3 text-primary focus:border-primary/50 outline-none"
-                      value={profile.role}
-                      onChange={(e) => setProfile({...profile, role: e.target.value})}
-                      placeholder="Role (e.g. Frontend Dev)"
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <h2 className="font-h1 text-h1 text-on-surface mb-1">{profile.name}</h2>
-                    <p className="font-h3 text-h3 text-primary">{profile.role}</p>
-                  </>
-                )}
-              </div>
-              
-              <div className="flex gap-3 flex-shrink-0">
-                {isEditing ? (
+          <div className="flex-1 z-10 w-full min-w-0">
+            {isEditing ? (
+              <div className="mb-4">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <h3 className="text-[14px] font-bold text-on-surface-variant uppercase tracking-widest">Edit Profile</h3>
                   <button 
                     onClick={handleSave}
-                    className="bg-primary text-on-primary px-8 py-2.5 rounded-xl font-bold text-[14px] flex items-center gap-2 hover:brightness-110 shadow-lg transition-all"
+                    className="bg-primary text-on-primary px-8 py-2.5 rounded-xl font-bold text-[14px] flex items-center gap-2 hover:brightness-110 shadow-lg transition-all flex-shrink-0"
                   >
                     <span className="material-symbols-outlined text-[18px]">check</span> Save Changes
                   </button>
-                ) : (
-                  <>
-                    <button 
-                      onClick={() => alert('Profile link copied! Share your Pinoy tech journey. 🇵🇭')}
-                      className="bg-gradient-to-r from-primary to-inverse-primary text-on-primary px-6 py-2 rounded-lg font-label-caps text-label-caps flex items-center gap-2 hover:brightness-110 shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">share</span> Share Profile
-                    </button>
-                    <button 
-                      onClick={() => setIsEditing(true)}
-                      className="glass-panel px-4 py-2 rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2 text-white"
-                    >
-                      <span className="material-symbols-outlined">edit</span>
-                      <span className="md:hidden lg:inline text-[13px] font-bold">Edit</span>
-                    </button>
-                  </>
-                )}
+                </div>
+                <div className="space-y-3">
+                  <input 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-2xl font-bold text-white focus:border-primary/50 outline-none transition-all"
+                    value={profile.name}
+                    onChange={(e) => setProfile({...profile, name: e.target.value})}
+                    placeholder="Full Name"
+                  />
+                  <input 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-lg text-primary font-semibold focus:border-primary/50 outline-none transition-all"
+                    value={profile.role}
+                    onChange={(e) => setProfile({...profile, role: e.target.value})}
+                    placeholder="Role (e.g. Frontend Dev)"
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div className="w-full max-w-xl">
+                  <h2 className="font-h1 text-h1 text-on-surface mb-1">{profile.name}</h2>
+                  <p className="font-h3 text-h3 text-primary">{profile.role}</p>
+                </div>
+                <div className="flex gap-3 flex-shrink-0">
+                  <button 
+                    onClick={() => alert('Profile link copied! Share your Pinoy tech journey. 🇵🇭')}
+                    className="bg-gradient-to-r from-primary to-inverse-primary text-on-primary px-6 py-2 rounded-lg font-label-caps text-label-caps flex items-center gap-2 hover:brightness-110 shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">share</span> Share Profile
+                  </button>
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="glass-panel px-4 py-2 rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2 text-white"
+                  >
+                    <span className="material-symbols-outlined">edit</span>
+                    <span className="md:hidden lg:inline text-[13px] font-bold">Edit</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {isEditing ? (
               <textarea 

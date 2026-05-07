@@ -1,10 +1,5 @@
-import { Redis } from '@upstash/redis';
+import prisma from "@/lib/prisma";
 import { NextResponse } from 'next/server';
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || '',
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
-});
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,9 +10,17 @@ export async function GET(request: Request) {
   }
 
   try {
-    const history = await redis.lrange(`chat_history:${chatId}`, 0, -1);
-    return NextResponse.json(history || []);
+    const messages = await prisma.chatMessage.findMany({
+      where: { chatId },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      include: {
+        sender: true
+      }
+    });
+    return NextResponse.json(messages.reverse());
   } catch (error) {
+    console.error('Fetch history error:', error);
     return NextResponse.json({ error: 'Failed to fetch history' }, { status: 500 });
   }
 }

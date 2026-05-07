@@ -37,28 +37,29 @@ export default function SettingsPage() {
   }, []);
 
   const handleSave = async () => {
-    // 1. Save locally for instant UI update
-    localStorage.setItem('hackmatch_user_profile', JSON.stringify(profile));
+    // 1. Load existing to prevent data loss
+    const existingRaw = localStorage.getItem('hackmatch_user_profile');
+    const existing = existingRaw ? JSON.parse(existingRaw) : {};
+    const updatedProfile = { ...existing, ...profile };
     
-    // 2. Sync to database immediately
-    const saved = localStorage.getItem('hackmatch_user_profile');
-    if (saved) {
-      const data = JSON.parse(saved);
-      if (data.email) {
-        try {
-          await fetch('/api/user/profile', {
-            method: 'POST',
-            body: JSON.stringify({ email: data.email, profile: profile }),
-            headers: { 'Content-Type': 'application/json' }
-          });
-          alert('Profile synchronized with database! 🚀');
-        } catch (e) {
-          console.error('Database sync failed');
-          alert('Saved locally, but database sync failed. It will retry on logout.');
-        }
-      } else {
-        alert('Settings saved locally! 🚀');
+    // 2. Save locally for instant UI update
+    localStorage.setItem('hackmatch_user_profile', JSON.stringify(updatedProfile));
+    
+    // 3. Sync to database immediately
+    if (updatedProfile.email) {
+      try {
+        await fetch('/api/user/profile', {
+          method: 'POST',
+          body: JSON.stringify(updatedProfile),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        alert('Profile synchronized with database! 🚀');
+      } catch (e) {
+        console.error('Database sync failed');
+        alert('Saved locally, but database sync failed. It will retry on logout.');
       }
+    } else {
+      alert('Settings saved locally! 🚀');
     }
   };
 

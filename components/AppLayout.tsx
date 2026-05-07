@@ -2,11 +2,45 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [matchNotification, setMatchNotification] = useState<any>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('hackmatch_user_profile');
+    if (stored) {
+      setCurrentUser(JSON.parse(stored));
+    }
+  }, []);
+
+  // Global Real-time Listeners
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    const channel = supabase.channel('global-notifications')
+      .on('broadcast', { event: 'new-match' }, ({ payload }) => {
+        const { users, names } = payload;
+        if (users.includes(currentUser.id)) {
+          // If the current user is part of the match, show the overlay
+          setMatchNotification({
+            name: names.find((n: string) => n !== currentUser.name) || 'A Hacker',
+            // In a real app, we'd fetch the other user's image too
+            image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400'
+          });
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser, pathname]);
 
   const handleLogout = async () => {
     // Save to database before logging out
@@ -17,7 +51,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         try {
           await fetch('/api/user/profile', {
             method: 'POST',
-            body: JSON.stringify({ email: profileData.email, profile: profileData }),
+            body: JSON.stringify(profileData),
             headers: { 'Content-Type': 'application/json' }
           });
         } catch (e) {
@@ -25,6 +59,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         }
       }
     }
+    localStorage.removeItem('hackmatch_user_profile');
     router.push('/');
   };
 
@@ -122,6 +157,79 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <span>Profile</span>
         </Link>
       </nav>
+
+      {/* Real-time Match Overlay */}
+      <AnimatePresence>
+        {matchNotification && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center"
+          >
+            <motion.div
+              initial={{ scale: 0.5, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              className="relative mb-12"
+            >
+              <div className="absolute inset-0 bg-primary/30 blur-[100px] rounded-full"></div>
+              <img 
+                src={matchNotification.image} 
+                alt={matchNotification.name} 
+                className="w-48 h-48 md:w-64 md:h-64 rounded-full border-4 border-primary object-cover relative z-10 shadow-2xl"
+              />
+              <motion.div 
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="absolute -top-4 -right-4 bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center shadow-xl z-20"
+              >
+                <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+              </motion.div>
+            </motion.div>
+
+            <motion.h2 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-5xl md:text-7xl font-black text-white italic tracking-tighter mb-4"
+            >
+              IT'S A MATCH!
+            </motion.h2>
+            
+            <motion.p 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-slate-400 text-lg md:text-xl mb-12 max-w-md"
+            >
+              You and <span className="text-white font-bold">{matchNotification.name}</span> have swiped right on each other. Build something epic together!
+            </motion.p>
+
+            <motion.div 
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="flex flex-col md:flex-row gap-4 w-full max-w-sm"
+            >
+              <button 
+                onClick={() => {
+                  router.push(`/messages?user=${encodeURIComponent(matchNotification.name)}`);
+                  setMatchNotification(null);
+                }}
+                className="flex-1 bg-primary text-white py-4 rounded-2xl font-bold text-lg hover:brightness-110 shadow-[0_0_30px_rgba(139,92,246,0.5)] transition-all"
+              >
+                Send Message
+              </button>
+              <button 
+                onClick={() => setMatchNotification(null)}
+                className="flex-1 bg-white/5 text-white py-4 rounded-2xl font-bold text-lg border border-white/10 hover:bg-white/10 transition-all"
+              >
+                Keep Swiping
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
