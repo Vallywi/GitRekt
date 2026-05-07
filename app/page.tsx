@@ -3,76 +3,81 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+// Mock database of registered users for the demo
+const MOCK_REGISTERED_USERS = ['angelo@up.edu.ph', 'test@hackmatch.com'];
+
 export default function WelcomePage() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    // Simulate database check delay
+    setTimeout(() => {
+      if (isLogin) {
+        // LOGIN LOGIC: Check if user exists
+        if (MOCK_REGISTERED_USERS.includes(email.toLowerCase())) {
+          router.push('/dashboard');
+        } else {
+          setError('Account not found. Mangyaring mag-Sign Up muna! 🇵🇭');
+          setIsLoading(false);
+        }
+      } else {
+        // SIGN UP LOGIC: Register the user
+        // Redirect NEW users to Onboarding
+        MOCK_REGISTERED_USERS.push(email.toLowerCase());
+        router.push('/onboarding');
+      }
+    }, 1500);
+  };
 
   return (
-    <div className="bg-[#000000] text-on-surface font-body-md min-h-screen flex items-center justify-center relative overflow-hidden py-12">
+    <div className="bg-[#000000] text-on-surface font-body-md min-h-screen flex items-center justify-center relative overflow-hidden py-12 px-4">
       {/* Background Glows */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.08)_0%,rgba(0,0,0,0)_70%)] pointer-events-none z-0"></div>
       
-      {/* Floating Elements */}
-      <div className="absolute bottom-[15%] left-[10%] w-24 h-24 rounded-full border border-white/[0.03] bg-white/[0.01] -z-10"></div>
-      <div className="absolute top-[10%] right-[20%] w-32 h-20 bg-white/[0.02] border border-white/[0.05] rounded-xl rotate-12 -z-10 backdrop-blur-sm shadow-2xl"></div>
-
-      <main className="relative z-10 w-full max-w-6xl mx-auto px-margin flex flex-col lg:flex-row items-center justify-between gap-xl">
-        {/* Left side: Hero */}
-        <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
-          {/* Logo Area */}
-          <div className="flex items-center justify-center lg:justify-start gap-4">
-            <div className="w-10 h-10 bg-[#1e1333] rounded-xl flex items-center justify-center border border-primary/10">
-              <span className="material-symbols-outlined text-[#8b5cf6] text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>code_blocks</span>
-            </div>
-            <h1 className="text-[32px] font-bold text-white tracking-tight">HackMatch</h1>
-          </div>
-          
-          <h2 className="text-[48px] md:text-[56px] font-bold text-white leading-[1.1] max-w-[600px]">
-            Find Your Perfect <span className="text-[#dbb8ff]">Hackathon</span> <br className="hidden md:block" /> Team.
-          </h2>
-          
-          <p className="text-[18px] text-on-surface-variant max-w-[580px] leading-[1.6] opacity-60">
-            Swipe, match, and collaborate with student innovators. Build the <br className="hidden md:block" /> future, together.
-          </p>
+      <main className="relative z-10 w-full max-w-[480px]">
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-bold text-white tracking-tighter mb-2">HackMatch</h1>
+          <p className="text-[#94a3b8] uppercase tracking-[0.3em] text-[10px] font-bold">Engineering Elite • 🇵🇭</p>
         </div>
 
-        {/* Right side: Auth Card */}
-        <div className="w-full max-w-[420px] relative group">
-          {/* Subtle Outer Card Glow */}
-          <div className="absolute -inset-[2px] bg-[#8b5cf6]/20 blur-xl rounded-[34px] -z-10 opacity-50"></div>
-          
-          <div className="p-10 rounded-[32px] shadow-2xl relative z-10 bg-[#0a0a0c]/90 backdrop-blur-3xl border border-[#ffffff]/[0.05] shadow-[0_0_40px_rgba(139,92,246,0.1)]">
-            {/* Inner top glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-[#8b5cf6]/20 to-transparent"></div>
-            
-            <h3 className="text-2xl text-white mb-10 text-center font-bold tracking-tight">
-              {isLogin ? 'Welcome Back' : 'Create Account'}
-            </h3>
-            
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); router.push('/onboarding'); }}>
-              {!isLogin && (
-                <div className="space-y-2">
-                  <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Full Name</label>
-                  <input 
-                    className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
-                    placeholder="Enter your name" 
-                    type="text"
-                    required
-                  />
+        <div className="glass-panel border border-white/[0.05] rounded-[32px] overflow-hidden shadow-2xl relative bg-[#0a0a0c]/80 backdrop-blur-3xl">
+          <div className="p-8 md:p-10">
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold text-white mb-2">{isLogin ? 'Welcome Back!' : 'Create Account'}</h2>
+              <p className="text-[#64748b] text-[14px]">
+                {isLogin ? 'Sign in to find your next dream team.' : 'Join the elite community of Filipino student developers.'}
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="bg-error/10 border border-error/20 text-error text-[13px] py-3 px-4 rounded-xl animate-pulse flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">error</span>
+                  {error}
                 </div>
               )}
-              
+
               <div className="space-y-2">
-                <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Email</label>
+                <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Email Address</label>
                 <input 
                   className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
-                  placeholder="Enter your email" 
+                  placeholder="name@university.edu.ph" 
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Password</label>
                 <div className="relative">
@@ -97,29 +102,51 @@ export default function WelcomePage() {
               {!isLogin && (
                 <>
                   <div className="space-y-2">
-                    <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">University</label>
+                    <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Full Name</label>
                     <input 
                       className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
-                      placeholder="e.g. UP Diliman" 
+                      placeholder="e.g. Juan Dela Cruz" 
                       type="text"
                       required
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Course</label>
-                    <input 
-                      className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
-                      placeholder="e.g. BS Computer Science" 
-                      type="text"
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">University</label>
+                      <input 
+                        className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
+                        placeholder="UP Diliman" 
+                        type="text"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Course</label>
+                      <input 
+                        className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
+                        placeholder="BS CS" 
+                        type="text"
+                        required
+                      />
+                    </div>
                   </div>
                 </>
               )}
 
-              <button type="submit" className="w-full py-4 rounded-full bg-[#8b5cf6] text-white text-[14px] font-bold flex items-center justify-center hover:brightness-110 shadow-[0_4px_20px_rgba(139,92,246,0.4)] transition-all mt-8">
-                {isLogin ? 'Login' : 'Sign Up'}
+              <button 
+                type="submit" 
+                disabled={isLoading}
+                className="w-full py-4 rounded-full bg-[#8b5cf6] text-white text-[14px] font-bold flex items-center justify-center hover:brightness-110 shadow-[0_4px_20px_rgba(139,92,246,0.4)] transition-all mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Checking...
+                  </div>
+                ) : (
+                  isLogin ? 'Login' : 'Create Account'
+                )}
               </button>
 
               <div className="text-center mt-6">
@@ -127,7 +154,10 @@ export default function WelcomePage() {
                   {isLogin ? "Don't have an account?" : "Already have an account?"}
                   <button 
                     type="button" 
-                    onClick={() => setIsLogin(!isLogin)}
+                    onClick={() => {
+                      setIsLogin(!isLogin);
+                      setError('');
+                    }}
                     className="ml-2 text-[#8b5cf6] font-bold hover:underline transition-all"
                   >
                     {isLogin ? 'Sign Up' : 'Login'}

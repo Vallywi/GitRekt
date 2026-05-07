@@ -1,7 +1,7 @@
 'use client';
 
 import AppLayout from '../../components/AppLayout';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
@@ -25,6 +25,20 @@ export default function ProfilePage() {
       { role: 'Backend Lodi', desc: 'Scaling systems for peak local traffic (Shopee/Lazada style).' }
     ]
   });
+
+  // Load onboarding data if it exists
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('hackmatch_user_profile');
+    if (savedProfile) {
+      const data = JSON.parse(savedProfile);
+      setProfile(prev => ({
+        ...prev,
+        role: data.role || prev.role,
+        skills: data.skills.length > 0 ? data.skills : prev.skills,
+        bio: data.isFirstTime ? `First-time hacker ready to learn and build! Interested in ${data.interests.join(', ')}.` : prev.bio
+      }));
+    }
+  }, []);
 
   const [newSkill, setNewSkill] = useState('');
 

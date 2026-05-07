@@ -1,149 +1,235 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const STEPS = [
+  { id: 1, title: 'Interests', icon: 'favorite' },
+  { id: 2, title: 'Role', icon: 'psychology' },
+  { id: 3, title: 'Skills', icon: 'code' },
+  { id: 4, title: 'Vibe', icon: 'auto_awesome' }
+];
+
+const CATEGORIES = ['AI/ML', 'Web3 & Crypto', 'FinTech', 'Social Good', 'Cybersecurity', 'Gaming', 'HealthTech', 'EdTech'];
+const ROLES = ['Frontend Dev', 'Backend Lodi', 'Full-Stack Architect', 'UI/UX Designer', 'Product Manager', 'Data Scientist'];
+const SKILLS = ['React', 'Next.js', 'TypeScript', 'Node.js', 'Python', 'Solidity', 'Figma', 'PostgreSQL'];
 
 export default function OnboardingPage() {
-  const [step, setStep] = useState(1);
   const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selections, setSelections] = useState({
+    interests: [] as string[],
+    role: '',
+    skills: [] as string[],
+    isFirstTime: false
+  });
 
-  const [selectedInterests, setSelectedInterests] = useState<string[]>(['AI/ML', 'FinTech', 'Gaming']);
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  
-  const interests = ['AI/ML', 'Web3 & Crypto', 'FinTech', 'Social Good', 'Cybersecurity', 'Gaming', 'HealthTech', 'EdTech'];
-  const roles = ['Frontend', 'Backend', 'Full Stack', 'UI/UX Design', 'Product Manager', 'Data Scientist', 'DevOps', 'Mobile Dev'];
-  const skills = ['React', 'Python', 'Node.js', 'Figma', 'TypeScript', 'AWS', 'TensorFlow', 'PostgreSQL'];
-
-  const toggleSelection = (item: string, list: string[], setList: (val: string[]) => void) => {
-    if (list.includes(item)) {
-      setList(list.filter(i => i !== item));
-    } else {
-      setList([...list, item]);
-    }
+  const toggleSelection = (category: 'interests' | 'skills', item: string) => {
+    setSelections(prev => ({
+      ...prev,
+      [category]: prev[category].includes(item)
+        ? prev[category].filter(i => i !== item)
+        : [...prev[category], item]
+    }));
   };
 
-  const handleNext = () => {
-    if (step < 3) {
-      setStep(step + 1);
-    } else {
-      router.push('/dashboard');
+  const nextStep = () => {
+    if (currentStep < 4) setCurrentStep(currentStep + 1);
+    else {
+      // Save selections to localStorage for the demo profile
+      localStorage.setItem('hackmatch_user_profile', JSON.stringify(selections));
+      router.push('/profile');
     }
   };
-
-  const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    } else {
-      router.push('/');
-    }
-  };
-
-  const currentOptions = step === 1 ? interests : step === 2 ? roles : skills;
-  const currentSelections = step === 1 ? selectedInterests : step === 2 ? selectedRoles : selectedSkills;
-  const currentSetSelection = step === 1 ? setSelectedInterests : step === 2 ? setSelectedRoles : setSelectedSkills;
-
-  const stepTitle = step === 1 ? "Hackathon Categories" : step === 2 ? "Your Role" : "Your Skills";
-  const stepDesc = step === 1 
-    ? "Select the types of projects and industries that interest you most." 
-    : step === 2 
-    ? "What role do you usually take on in a team?" 
-    : "Select the tools and languages you are proficient in.";
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-body-md text-body-md bg-abyss text-on-surface">
-      {/* Ambient Illumination */}
-      <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.15)_0%,rgba(0,0,0,0)_70%)] pointer-events-none z-0"></div>
-      <div className="absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.15)_0%,rgba(0,0,0,0)_70%)] pointer-events-none z-0"></div>
-      
-      <main className="w-full max-w-2xl px-margin md:px-0 relative z-10 flex flex-col items-center">
-        {/* Brand Header */}
-        <div className="mb-lg text-center">
-          <h1 className="font-h1 text-h1 text-primary tracking-tighter mb-xs">HackMatch</h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant">Engineering Elite</p>
+    <div className="bg-black min-h-screen text-white font-body-md flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.05)_0%,rgba(0,0,0,0)_70%)] pointer-events-none"></div>
+
+      <div className="relative z-10 w-full max-w-2xl">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tighter mb-2">HackMatch</h1>
+          <p className="text-[#94a3b8] uppercase tracking-[0.2em] text-[10px] font-bold">Engineering Elite</p>
         </div>
 
-        {/* Glassmorphic Card */}
-        <div className="glass-panel w-full rounded-xl p-md md:p-lg shadow-[0_0_40px_rgba(0,0,0,0.8)] relative bg-white/5 backdrop-blur-xl border border-white/15">
-          {/* Progress Indicator */}
-          <div className="w-full flex items-center justify-between mb-lg relative">
-            <div className="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant/30 -z-10 -translate-y-1/2"></div>
-            <div 
-              className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 -translate-y-1/2 shadow-[0_0_10px_rgba(208,188,255,0.5)] transition-all duration-500"
-              style={{ width: `${((step - 1) / 3) * 100}%` }}
-            ></div>
-            
-            {[1, 2, 3, 4].map((s) => (
-              <div key={s} className="flex flex-col items-center gap-xs">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                  s < step ? 'bg-primary/20 text-primary border border-primary/50' :
-                  s === step ? 'bg-primary text-on-primary shadow-[0_0_15px_rgba(208,188,255,0.4)]' :
-                  'bg-surface-variant text-on-surface-variant border border-outline-variant/50'
-                }`}>
-                  {s < step ? <span className="material-symbols-outlined text-sm">check</span> : s}
-                </div>
-                <span className={`font-label-caps text-label-caps ${s <= step ? 'text-primary' : 'text-on-surface-variant'}`}>
-                  {s === 1 ? 'Interests' : s === 2 ? 'Role' : s === 3 ? 'Skills' : 'Vibe'}
-                </span>
+        {/* Progress Tracker */}
+        <div className="flex justify-between items-center mb-16 relative px-4">
+          <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -translate-y-1/2 z-0"></div>
+          {STEPS.map((step) => (
+            <div key={step.id} className="relative z-10 flex flex-col items-center gap-3">
+              <div 
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                  currentStep >= step.id ? 'bg-primary text-on-primary shadow-[0_0_20px_rgba(139,92,246,0.5)]' : 'bg-[#1e1e24] text-[#64748b]'
+                }`}
+              >
+                {currentStep > step.id ? (
+                  <span className="material-symbols-outlined text-[20px]">check</span>
+                ) : (
+                  <span className="text-[14px] font-bold">{step.id}</span>
+                )}
               </div>
-            ))}
-          </div>
-
-          {/* Content Area */}
-          <div className="flex flex-col gap-md">
-            <div className="text-center">
-              <h2 className="font-h2 text-h2 text-on-surface mb-xs">{stepTitle}</h2>
-              <p className="font-body-md text-body-md text-on-surface-variant">{stepDesc}</p>
+              <span className={`text-[11px] font-bold uppercase tracking-widest ${currentStep >= step.id ? 'text-primary' : 'text-[#64748b]'}`}>
+                {step.title}
+              </span>
             </div>
+          ))}
+        </div>
 
-            {/* Skill Chips Container */}
-            <div className="flex flex-wrap gap-sm justify-center py-sm">
-              {currentOptions.map((item) => {
-                const isActive = currentSelections.includes(item);
-                return (
+        {/* Step Content */}
+        <div className="glass-panel border border-white/[0.05] rounded-[32px] p-8 md:p-12 min-h-[400px] flex flex-col justify-between">
+          <AnimatePresence mode="wait">
+            {currentStep === 1 && (
+              <motion.div 
+                key="step1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-8"
+              >
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold mb-3">Hackathon Categories</h2>
+                  <p className="text-[#94a3b8] text-[15px]">Select the types of projects and industries that interest you most.</p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {CATEGORIES.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => toggleSelection('interests', cat)}
+                      className={`px-6 py-2.5 rounded-full text-[13px] font-bold border transition-all ${
+                        selections.interests.includes(cat)
+                          ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(139,92,246,0.3)]'
+                          : 'bg-white/5 border-white/10 text-[#94a3b8] hover:border-white/20'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+                <div className="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-[14px]">First-time Hacker?</p>
+                    <p className="text-[12px] text-[#64748b]">Let us know if you're new to hackathons so we can match you with leaders.</p>
+                  </div>
                   <button 
-                    key={item}
-                    onClick={() => toggleSelection(item, currentSelections, currentSetSelection as any)}
-                    className={`rounded-full px-4 py-2 font-label-caps text-label-caps flex items-center gap-xs transition-all duration-200 ${
-                      isActive 
-                        ? 'bg-on-primary-container text-primary border border-primary/30 shadow-[0_0_15px_rgba(139,92,246,0.2)]' 
-                        : 'bg-on-tertiary-container text-primary border border-transparent hover:bg-on-primary-container'
-                    }`}
+                    onClick={() => setSelections({...selections, isFirstTime: !selections.isFirstTime})}
+                    className={`w-12 h-6 rounded-full transition-all relative ${selections.isFirstTime ? 'bg-primary' : 'bg-[#1e1e24]'}`}
                   >
-                    {item}
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${selections.isFirstTime ? 'left-7' : 'left-1'}`}></div>
                   </button>
-                );
-              })}
-            </div>
-
-            {step === 1 && (
-              <div className="flex items-center justify-between p-sm rounded-lg bg-surface-container-lowest/50 border border-outline-variant/20 mt-sm">
-                <div className="flex flex-col">
-                  <span className="font-body-md text-body-md text-on-surface font-semibold">First-time Hacker?</span>
-                  <span className="font-body-sm text-body-sm text-on-surface-variant">Let us know if you're new to hackathons so we can match you with beginner-friendly teams.</span>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input className="sr-only peer" type="checkbox" />
-                  <div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:border-outline-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
+              </motion.div>
             )}
-          </div>
 
-          {/* Actions */}
-          <div className="mt-lg flex items-center justify-between pt-md border-t border-outline-variant/20">
-            <button onClick={handleBack} className="btn-ghost border border-white/20 bg-transparent hover:bg-white/5 transition-all font-label-caps text-label-caps text-on-surface-variant px-md py-sm rounded-lg flex items-center gap-xs">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_back</span>
-              Back
-            </button>
-            <button onClick={handleNext} className="bg-gradient-to-r from-primary-container to-inverse-primary font-label-caps text-label-caps text-on-primary px-lg py-sm rounded-lg flex items-center gap-xs shadow-[0_0_20px_rgba(139,92,246,0.2)] hover:brightness-110 transition-all">
-              Continue
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>arrow_forward</span>
+            {currentStep === 2 && (
+              <motion.div 
+                key="step2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-8"
+              >
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold mb-3">Choose Your Role</h2>
+                  <p className="text-[#94a3b8] text-[15px]">What is your primary focus during a hackathon?</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {ROLES.map(role => (
+                    <button
+                      key={role}
+                      onClick={() => setSelections({...selections, role})}
+                      className={`p-6 rounded-2xl border text-left transition-all ${
+                        selections.role === role
+                          ? 'bg-primary/10 border-primary text-primary'
+                          : 'bg-white/5 border-white/10 text-[#94a3b8]'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined mb-2 block">
+                        {role.includes('Designer') ? 'brush' : role.includes('Manager') ? 'leaderboard' : 'code'}
+                      </span>
+                      <p className="font-bold text-[14px]">{role}</p>
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 3 && (
+              <motion.div 
+                key="step3"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-8"
+              >
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold mb-3">Your Tech Stack</h2>
+                  <p className="text-[#94a3b8] text-[15px]">Which technologies are you most comfortable using?</p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {SKILLS.map(skill => (
+                    <button
+                      key={skill}
+                      onClick={() => toggleSelection('skills', skill)}
+                      className={`px-6 py-2.5 rounded-full text-[13px] font-bold border transition-all ${
+                        selections.skills.includes(skill)
+                          ? 'bg-primary/20 border-primary text-primary'
+                          : 'bg-white/5 border-white/10 text-[#94a3b8]'
+                      }`}
+                    >
+                      {skill}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 4 && (
+              <motion.div 
+                key="step4"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-8"
+              >
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold mb-3">Team Vibe</h2>
+                  <p className="text-[#94a3b8] text-[15px]">What kind of team environment do you prefer?</p>
+                </div>
+                <div className="space-y-4">
+                  {['Competitive & High-Speed', 'Learning & Collaborative', 'Chill & Fun-Focused'].map(vibe => (
+                    <button
+                      key={vibe}
+                      className="w-full p-6 rounded-2xl bg-white/5 border border-white/10 text-left hover:border-primary/50 transition-all flex items-center justify-between group"
+                    >
+                      <span className="font-bold text-white group-hover:text-primary transition-colors">{vibe}</span>
+                      <span className="material-symbols-outlined text-slate-500">chevron_right</span>
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="mt-12 flex gap-4">
+            {currentStep > 1 && (
+              <button 
+                onClick={() => setCurrentStep(currentStep - 1)}
+                className="px-8 py-4 rounded-full border border-white/10 text-white font-bold hover:bg-white/5 transition-all"
+              >
+                Back
+              </button>
+            )}
+            <button 
+              onClick={nextStep}
+              className="flex-1 py-4 rounded-full bg-primary text-on-primary font-bold hover:brightness-110 shadow-lg transition-all"
+            >
+              {currentStep === 4 ? 'Complete Profile' : 'Next Step'}
             </button>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
