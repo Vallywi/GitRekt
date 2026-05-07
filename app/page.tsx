@@ -1,8 +1,9 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function WelcomePage() {
+  const router = useRouter();
   return (
     <div className="bg-[#000000] text-on-surface font-body-md min-h-screen flex items-center justify-center relative overflow-hidden py-12">
       {/* Background Glows */}
@@ -43,13 +44,14 @@ export default function WelcomePage() {
             
             <h3 className="text-2xl text-white mb-10 text-center font-bold tracking-tight">Welcome Back</h3>
             
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); router.push('/onboarding'); }}>
               <div className="space-y-2">
                 <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Email</label>
                 <input 
                   className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                   placeholder="Enter your email" 
                   type="email"
+                  required
                 />
               </div>
               
@@ -59,6 +61,7 @@ export default function WelcomePage() {
                   className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                   placeholder="Enter your password" 
                   type="password"
+                  required
                 />
               </div>
               
@@ -80,9 +83,9 @@ export default function WelcomePage() {
                 />
               </div>
 
-              <Link href="/onboarding" className="w-full py-4 rounded-full bg-[#8b5cf6] text-white text-[14px] font-bold flex items-center justify-center hover:brightness-110 shadow-[0_4px_20px_rgba(139,92,246,0.4)] transition-all mt-8">
+              <button type="submit" className="w-full py-4 rounded-full bg-[#8b5cf6] text-white text-[14px] font-bold flex items-center justify-center hover:brightness-110 shadow-[0_4px_20px_rgba(139,92,246,0.4)] transition-all mt-8">
                 Login
-              </Link>
+              </button>
 
               <div className="flex items-center gap-4 py-2">
                 <div className="h-[1px] bg-white/[0.05] flex-1"></div>

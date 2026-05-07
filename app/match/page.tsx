@@ -1,8 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function MatchSuccessPage() {
+function MatchContent() {
+  const searchParams = useSearchParams();
+  const name = searchParams.get('name') || 'Maria';
+  const image = searchParams.get('image') || 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=300';
+  const skillsString = searchParams.get('skills') || 'TypeScript,Next.js,Taglish NLP';
+  const skills = skillsString.split(',');
+
   return (
     <div className="bg-[#000000] text-on-surface antialiased min-h-screen flex items-center justify-center overflow-hidden relative font-body-md">
       {/* Background Glow */}
@@ -30,7 +38,7 @@ export default function MatchSuccessPage() {
               <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>electric_bolt</span>
             </div>
             <h1 className="text-[40px] font-bold text-white mb-2 tracking-tight">It's a Match!</h1>
-            <p className="text-[#94a3b8] text-[15px] font-medium opacity-80">You and Maria have exceptional synergy.</p>
+            <p className="text-[#94a3b8] text-[15px] font-medium opacity-80">You and {name} have exceptional synergy.</p>
           </div>
           
           {/* Avatars & Compatibility */}
@@ -39,7 +47,7 @@ export default function MatchSuccessPage() {
               {/* User Avatar */}
               <div className="relative z-10">
                 <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-[#1e1e24] shadow-2xl bg-[#1e1e24]">
-                  <img alt="Your profile" className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&q=80&w=300" />
+                  <img alt="Your profile" className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=300" />
                 </div>
               </div>
               
@@ -54,7 +62,7 @@ export default function MatchSuccessPage() {
               {/* Matched User Avatar */}
               <div className="relative z-20">
                 <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-2 border-[#1e1e24] shadow-2xl bg-[#1e1e24]">
-                  <img alt="Maria Santos" className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&q=80&w=300" />
+                  <img alt={name} className="w-full h-full object-cover" src={image} />
                 </div>
               </div>
             </div>
@@ -62,28 +70,38 @@ export default function MatchSuccessPage() {
           
           {/* Tech Stack Chips */}
           <div className="relative z-10 flex flex-wrap justify-center gap-2 mb-10">
-            <span className="px-4 py-1.5 rounded-full bg-[#1e1333] text-[#8b5cf6] text-[12px] font-bold border border-[#8b5cf6]/20">TypeScript</span>
-            <span className="px-4 py-1.5 rounded-full bg-[#1e1333] text-[#8b5cf6] text-[12px] font-bold border border-[#8b5cf6]/20">Next.js</span>
-            <span className="px-4 py-1.5 rounded-full bg-[#1e1333] text-[#8b5cf6] text-[12px] font-bold border border-[#8b5cf6]/20">Taglish NLP</span>
+            {skills.map((skill, i) => (
+              <span key={i} className="px-4 py-1.5 rounded-full bg-[#1e1333] text-[#8b5cf6] text-[12px] font-bold border border-[#8b5cf6]/20">
+                {skill.trim()}
+              </span>
+            ))}
           </div>
           
           {/* Action Buttons */}
           <div className="relative z-10 flex flex-col w-full gap-3">
-            <Link href="/messages" className="w-full py-4 rounded-2xl bg-[#8b5cf6] text-white font-bold text-[15px] shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+            <Link href={`/messages?user=${encodeURIComponent(name)}`} className="w-full py-4 rounded-2xl bg-[#8b5cf6] text-white font-bold text-[15px] shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>chat_bubble</span>
-              Start Chat with Maria
+              Start Chat with {name}
             </Link>
             
-            <Link href="/discover" className="w-full py-4 rounded-2xl bg-[#1e1e24]/80 text-[#94a3b8] font-bold text-[15px] border border-white/[0.05] hover:bg-[#25252b] hover:text-white transition-all">
+            <Link href="/dashboard" className="w-full py-4 rounded-2xl bg-[#1e1e24]/80 text-[#94a3b8] font-bold text-[15px] border border-white/[0.05] hover:bg-[#25252b] hover:text-white hover:scale-[1.02] transition-all flex items-center justify-center">
               Join AgriTech PH Challenge
             </Link>
             
-            <Link href="/swipe" className="text-[#64748b] font-bold text-[13px] uppercase tracking-widest mt-4 hover:text-[#8b5cf6] transition-colors">
+            <Link href="/swipe" className="text-[#64748b] font-bold text-[13px] uppercase tracking-widest mt-6 hover:text-white hover:scale-105 transition-all inline-block">
               Keep Swiping
             </Link>
           </div>
         </div>
       </main>
     </div>
+  );
+}
+
+export default function MatchSuccessPage() {
+  return (
+    <Suspense fallback={<div className="bg-black min-h-screen flex items-center justify-center text-white">Loading Match...</div>}>
+      <MatchContent />
+    </Suspense>
   );
 }

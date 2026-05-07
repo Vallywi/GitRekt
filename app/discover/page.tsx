@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import AppLayout from '../../components/AppLayout';
 import Link from 'next/link';
 
@@ -79,6 +80,19 @@ const HACKATHONS = [
 ];
 
 export default function DiscoverPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  const categories = ['All', 'Web3', 'AI/ML', 'Fintech', 'Design', 'Gaming'];
+
+  const filteredHackathons = HACKATHONS.filter(event => {
+    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         event.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory = activeCategory === 'All' || event.category === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <AppLayout>
       <div className="max-w-container-max mx-auto px-sm md:px-margin py-lg md:py-xl mt-16 lg:mt-0 pb-24">
@@ -95,14 +109,29 @@ export default function DiscoverPage() {
           <div className="flex flex-col md:flex-row gap-2 items-center bg-[#0a0a0c]/60 backdrop-blur-3xl border border-white/[0.05] rounded-[20px] p-2 shadow-2xl">
             <div className="flex-1 w-full relative">
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">search</span>
-              <input className="w-full bg-transparent border-none text-white font-medium text-sm pl-12 py-3.5 focus:ring-0 placeholder:text-slate-600 outline-none" placeholder="Search events, technologies, or locations..." type="text"/>
+              <input 
+                className="w-full bg-transparent border-none text-white font-medium text-sm pl-12 py-3.5 focus:ring-0 placeholder:text-slate-600 outline-none" 
+                placeholder="Search events, technologies, or locations..." 
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
             <div className="h-8 w-[1px] bg-white/[0.05] hidden md:block mx-2"></div>
             <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto custom-scrollbar px-2 md:px-0">
-              <button className="px-4 py-2 rounded-full bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 text-[#8b5cf6] text-[12px] font-bold whitespace-nowrap hover:bg-[#8b5cf6]/20 transition-all">All Events</button>
-              <button className="px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.05] text-slate-400 text-[12px] font-bold whitespace-nowrap hover:bg-white/10 hover:text-white transition-all">Web3</button>
-              <button className="px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.05] text-slate-400 text-[12px] font-bold whitespace-nowrap hover:bg-white/10 hover:text-white transition-all">AI/ML</button>
-              <button className="px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.05] text-slate-400 text-[12px] font-bold whitespace-nowrap hover:bg-white/10 hover:text-white transition-all">Fintech</button>
+              {categories.map(cat => (
+                <button 
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-[12px] font-bold whitespace-nowrap transition-all ${
+                    activeCategory === cat 
+                      ? 'bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 text-[#8b5cf6]' 
+                      : 'bg-white/[0.03] border border-white/[0.05] text-slate-400 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {cat === 'All' ? 'All Events' : cat}
+                </button>
+              ))}
               <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.05] text-white text-[12px] font-bold whitespace-nowrap hover:border-[#8b5cf6]/40 transition-all ml-auto">
                 <span className="material-symbols-outlined text-[18px]">tune</span> Filters
               </button>
@@ -112,7 +141,7 @@ export default function DiscoverPage() {
 
         {/* Bento Grid - Events */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {HACKATHONS.map((event) => (
+          {filteredHackathons.map((event) => (
             <article 
               key={event.id}
               className={`${event.featured ? 'md:col-span-2' : ''} relative group rounded-[24px] bg-[#0f0f12]/40 backdrop-blur-3xl border border-white/[0.05] overflow-hidden hover:border-[#8b5cf6]/30 transition-all duration-500 flex flex-col`}
@@ -168,6 +197,12 @@ export default function DiscoverPage() {
             </article>
           ))}
         </div>
+        {filteredHackathons.length === 0 && (
+          <div className="text-center py-24">
+            <span className="material-symbols-outlined text-slate-700 text-6xl mb-4">search_off</span>
+            <p className="text-slate-500 font-medium">No hackathons found matching your criteria.</p>
+          </div>
+        )}
       </div>
     </AppLayout>
   );

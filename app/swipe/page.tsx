@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppLayout from '../../components/AppLayout';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,7 +12,7 @@ const MOCK_PROFILES = [
     age: 22,
     role: 'Frontend Architect',
     school: 'BS Computer Science, UP Diliman',
-    image: 'https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=800',
     skills: ['React', 'Next.js', 'Tailwind'],
     bio: 'Building hyper-fast web apps for the local startup scene. Exploring modern UI/UX for Filipino-centric platforms. Looking for a backend lodi to build the next super-app.'
   },
@@ -22,7 +22,7 @@ const MOCK_PROFILES = [
     age: 21,
     role: 'Product Designer',
     school: 'AB Interactive Design, DLSU',
-    image: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&q=80&w=800',
+    image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=800',
     skills: ['Figma', 'Prototyping', 'User Research'],
     bio: 'Obsessed with accessibility in local gov apps. I turn complex problems into simple, beautiful interfaces. Seeking a team that values Pinoy-centric design.'
   },
@@ -55,6 +55,256 @@ const MOCK_PROFILES = [
     image: 'https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?auto=format&fit=crop&q=80&w=800',
     skills: ['TypeScript', 'Supabase', 'GraphQL'],
     bio: 'The generalist you need. I ship features end-to-end and love building community-driven projects. Ready to grind for 48 hours in the next Manila hackathon!'
+  },
+  {
+    id: 6,
+    name: 'Isabella Ramos',
+    age: 21,
+    role: 'Cybersecurity Analyst',
+    school: 'BS Computer Science, TIP Manila',
+    image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=800',
+    skills: ['PenTesting', 'Linux', 'Ethical Hacking'],
+    bio: 'Keeping local fintech platforms secure. I focus on vulnerability assessment and secure coding practices. Looking for a team that takes data privacy seriously.'
+  },
+  {
+    id: 7,
+    name: 'Nathaniel Go',
+    age: 23,
+    role: 'Mobile Developer',
+    school: 'BS Information Tech, FEU Tech',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800',
+    skills: ['Flutter', 'Firebase', 'Dart'],
+    bio: 'Specializing in cross-platform mobile apps for the masses. I built a local community pantry finder app. Ready to build the next essential Pinoy app.'
+  },
+  {
+    id: 8,
+    name: 'Sofia Abad',
+    age: 20,
+    role: 'Data Scientist',
+    school: 'BS Statistics, UP Diliman',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=800',
+    skills: ['R', 'Tableau', 'Big Data'],
+    bio: 'Turning local urban data into actionable insights. I love visualizing complex datasets about Manila traffic and public health. Data-driven and ready to hack.'
+  },
+  {
+    id: 9,
+    name: 'Rico Blanco',
+    age: 22,
+    role: 'Cloud Engineer',
+    school: 'Computer Engineering, UST',
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=800',
+    skills: ['AWS', 'Docker', 'Kubernetes'],
+    bio: 'Deployment is my middle name. I ensure your app stays up even when 11.11 hits. Seeking a team with a solid product vision and high-performance requirements.'
+  },
+  {
+    id: 10,
+    name: 'Yumi Tanaka',
+    age: 21,
+    role: 'UX Researcher',
+    school: 'Multimedia Arts, Mapua',
+    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=800',
+    skills: ['User Testing', 'Personas', 'Journey Mapping'],
+    bio: 'Bridging the gap between tech and the Pinoy user experience. I advocate for the user in every design decision. Let’s make tech that everyone can use.'
+  },
+  {
+    id: 11,
+    name: 'Paolo Lim',
+    age: 22,
+    role: 'Game Developer',
+    school: 'BS Computer Science, Mapua',
+    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=800',
+    skills: ['Unity', 'C#', '3D Modeling'],
+    bio: 'Creating games that highlight Filipino folklore. I love mixing modern mechanics with traditional stories. Looking for an artist to join my quest!'
+  },
+  {
+    id: 12,
+    name: 'Chloe Evangelista',
+    age: 21,
+    role: 'Web Developer',
+    school: 'BS Information Tech, UST',
+    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800',
+    skills: ['Vue.js', 'Firebase', 'Sass'],
+    bio: 'Passionate about building clean and efficient websites. I specialize in frontend frameworks and love experimenting with new CSS techniques.'
+  },
+  {
+    id: 13,
+    name: 'Miguel Rodriguez',
+    age: 23,
+    role: 'IoT Engineer',
+    school: 'BS Electronics Engineering, UP Diliman',
+    image: 'https://images.unsplash.com/photo-1552058544-f2b08422138a?auto=format&fit=crop&q=80&w=800',
+    skills: ['Arduino', 'Raspberry Pi', 'C++'],
+    bio: 'Solving local infrastructure problems with smart devices. I built a flood warning system for my barangay. Let’s make Manila smarter.'
+  },
+  {
+    id: 14,
+    name: 'Samantha Tan',
+    age: 21,
+    role: 'UI/UX Designer',
+    school: 'BS Interactive Design, DLSU',
+    image: 'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?auto=format&fit=crop&q=80&w=800',
+    skills: ['Adobe XD', 'Sketch', 'User Flows'],
+    bio: 'Designing interfaces that feel like second nature. I focus on creating inclusive designs for the local market. Design is my language.'
+  },
+  {
+    id: 15,
+    name: 'Rafael Santos',
+    age: 22,
+    role: 'Blockchain Developer',
+    school: 'BS Computer Science, ADMU',
+    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800',
+    skills: ['Solidity', 'Ethereum', 'Web3.js'],
+    bio: 'Exploring the future of finance in the Philippines. I build decentralized apps for transparent governance. Web3 enthusiast and builder.'
+  },
+  {
+    id: 16,
+    name: 'Julia Garcia',
+    age: 20,
+    role: 'Data Analyst',
+    school: 'BS Statistics, UP Diliman',
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
+    skills: ['SQL', 'Python', 'Excel'],
+    bio: 'Extracting meaning from the noise. I love finding trends in local e-commerce data to help SMEs grow. Numbers tell a story, and I’m the narrator.'
+  },
+  {
+    id: 17,
+    name: 'Gabriel Mercado',
+    age: 23,
+    role: 'Backend Developer',
+    school: 'BS Information Tech, FEU Tech',
+    image: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=800',
+    skills: ['Django', 'Redis', 'Docker'],
+    bio: 'Building robust backends that can handle anything. I focus on security and scalability for local payment gateways. Code that works, every time.'
+  },
+  {
+    id: 18,
+    name: 'Andrea Lim',
+    age: 21,
+    role: 'Motion Designer',
+    school: 'Multimedia Arts, Benilde',
+    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=800',
+    skills: ['After Effects', 'Cinema 4D', 'Premiere'],
+    bio: 'Bringing static designs to life with fluid motion. I create engaging content for local tech startups. Let’s add some movement to your project.'
+  },
+  {
+    id: 19,
+    name: 'Christian Reyes',
+    age: 22,
+    role: 'Software Engineer',
+    school: 'BS Computer Science, PUP Manila',
+    image: 'https://images.unsplash.com/photo-1504257432389-52343af06ae3?auto=format&fit=crop&q=80&w=800',
+    skills: ['Java', 'Spring Boot', 'MySQL'],
+    bio: 'Determined to build impactful software for the public sector. I value efficiency and reliability. Ready to solve complex problems with code.'
+  },
+  {
+    id: 20,
+    name: 'Katrina Sy',
+    age: 22,
+    role: 'Product Manager',
+    school: 'BS Business Management, UA&P',
+    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=800',
+    skills: ['Agile', 'Scrum', 'Market Research'],
+    bio: 'Bridging the gap between business goals and technical execution. I love defining product roadmaps for the local fintech scene. Vision-driven and organized.'
+  },
+  {
+    id: 21,
+    name: 'Marco Jose',
+    age: 22,
+    role: 'AI Engineer',
+    school: 'BS Computer Science, Mapua',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800',
+    skills: ['TensorFlow', 'Keras', 'OpenCV'],
+    bio: 'Developing computer vision models for local agriculture. I focus on automated crop monitoring and pest detection. AI for a better future.'
+  },
+  {
+    id: 22,
+    name: 'Leah Torres',
+    age: 23,
+    role: 'Cybersecurity Analyst',
+    school: 'BS Information Tech, TIP Quezon City',
+    image: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&q=80&w=800',
+    skills: ['Wireshark', 'Metasploit', 'SOC'],
+    bio: 'Defending local data from cyber threats. I specialize in network security and incident response. Always vigilant, always learning.'
+  },
+  {
+    id: 23,
+    name: 'Vince Dizon',
+    age: 23,
+    role: 'Robotics Engineer',
+    school: 'BS Mechanical Engineering, DLSU',
+    image: 'https://images.unsplash.com/photo-1463453091185-61582044d556?auto=format&fit=crop&q=80&w=800',
+    skills: ['ROS', 'SolidWorks', 'Python'],
+    bio: 'Building robots that assist in local disaster recovery. I love integrating hardware and software to solve physical challenges. Mechanical mind, digital heart.'
+  },
+  {
+    id: 24,
+    name: 'Nicole Pineda',
+    age: 20,
+    role: 'Social Media Manager',
+    school: 'AB Communication, UST',
+    image: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&q=80&w=800',
+    skills: ['Content Strategy', 'SEO', 'Copywriting'],
+    bio: 'Amplifying the voice of local tech communities. I create content that resonates with the Pinoy audience. Storyteller and community builder.'
+  },
+  {
+    id: 25,
+    name: 'Justin Cruz',
+    age: 22,
+    role: 'Mobile Developer',
+    school: 'BS Computer Science, UP Manila',
+    image: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=800',
+    skills: ['React Native', 'Swift', 'Kotlin'],
+    bio: 'Building seamless mobile experiences for healthcare access. I focus on intuitive design and fast performance. Helping Pinoys get better care through tech.'
+  },
+  {
+    id: 26,
+    name: 'Patricia Lee',
+    age: 21,
+    role: 'Service Designer',
+    school: 'AB Interdisciplinary Studies, ADMU',
+    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800',
+    skills: ['Service Blueprints', 'Design Thinking', 'Workshops'],
+    bio: 'Improving public services through human-centered design. I focus on creating seamless experiences for government processes. People-first approach.'
+  },
+  {
+    id: 27,
+    name: 'Enzo Morales',
+    age: 23,
+    role: 'Cloud Architect',
+    school: 'BS Software Engineering, Mapua',
+    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=800',
+    skills: ['Azure', 'Terraform', 'CI/CD'],
+    bio: 'Designing scalable cloud infrastructures for local startups. I focus on cost-optimization and high-availability. The cloud is the limit.'
+  },
+  {
+    id: 28,
+    name: 'Sarah Lopez',
+    age: 22,
+    role: 'Digital Illustrator',
+    school: 'BFA Painting, UST',
+    image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
+    skills: ['Procreate', 'Photoshop', 'Concept Art'],
+    bio: 'Visualizing Pinoy cyberpunk futures. I love creating immersive concept art for local game devs. Art that inspires and tells a story.'
+  },
+  {
+    id: 29,
+    name: 'Diego Ramos',
+    age: 23,
+    role: 'Fullstack Developer',
+    school: 'BS Computer Science, DLSU',
+    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800',
+    skills: ['Elixir', 'Phoenix', 'React'],
+    bio: 'Passionate about building functional and real-time web applications. I focus on concurrent systems and clean code. Ready to build something big.'
+  },
+  {
+    id: 30,
+    name: 'Mikaela Hernandez',
+    age: 22,
+    role: 'Sustainable Tech Advocate',
+    school: 'BS Environmental Science, UP Diliman',
+    image: 'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?auto=format&fit=crop&q=80&w=800',
+    skills: ['Project Management', 'Sustainability', 'Policy'],
+    bio: 'Driving the adoption of green technology in local industries. I focus on creating sustainable solutions for urban challenges. Tech for a greener tomorrow.'
   }
 ];
 
@@ -74,8 +324,22 @@ export default function SwipePage() {
   };
 
   const handleMatch = () => {
-    router.push('/match');
+    const skillsParam = encodeURIComponent(currentProfile.skills.join(','));
+    router.push(`/match?name=${encodeURIComponent(currentProfile.name)}&image=${encodeURIComponent(currentProfile.image)}&skills=${skillsParam}`);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        handleSwipe('left');
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+        handleMatch();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIndex]);
 
   return (
     <AppLayout>
