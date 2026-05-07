@@ -38,8 +38,30 @@ export default function OnboardingPage() {
   const nextStep = () => {
     if (currentStep < 4) setCurrentStep(currentStep + 1);
     else {
-      // Save selections to localStorage for the demo profile
-      localStorage.setItem('hackmatch_user_profile', JSON.stringify(selections));
+      // Merge selections with existing profile (Name, University, etc.)
+      const savedProfile = localStorage.getItem('hackmatch_user_profile');
+      let finalProfile = selections;
+      
+      if (savedProfile) {
+        const existingData = JSON.parse(savedProfile);
+        finalProfile = {
+          ...existingData,
+          ...selections,
+          isFirstTime: false // Mark as completed
+        };
+      }
+
+      localStorage.setItem('hackmatch_user_profile', JSON.stringify(finalProfile));
+      
+      // Also sync to cloud immediately
+      if (finalProfile.email) {
+        fetch('/api/user/profile', {
+          method: 'POST',
+          body: JSON.stringify({ email: finalProfile.email, profile: finalProfile }),
+          headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error('Onboarding cloud sync failed:', err));
+      }
+
       router.push('/profile');
     }
   };
